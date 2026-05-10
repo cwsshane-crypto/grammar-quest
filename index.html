@@ -1102,6 +1102,14 @@ function checkAnswer(idx) {
 
     showFloatText(`+${coins} 🪙`, 'gold');
     updateHud();
+
+    // Check if all NPCs answered → auto reset
+    if(state.answeredNpcs.size >= state.npcs.length) {
+      setTimeout(() => {
+        showFloatText('🎉 全部完成！新一輪開始！', 'gold');
+        resetAllNpcs();
+      }, 1500);
+    }
   } else {
     feedback.className = 'q-feedback show wrong';
     feedbackTitle.textContent = '❌ 答錯了';
@@ -1117,6 +1125,25 @@ function checkAnswer(idx) {
     state.currentNpc = null;
     state.currentQuestion = null;
   }, 2500);
+}
+
+// Reset all NPCs for a new round
+function resetAllNpcs() {
+  state.answeredNpcs.clear();
+  state.answered = 0;
+  state.npcs = [];
+
+  // Remove old NPC elements
+  document.querySelectorAll('.npc').forEach(el => el.remove());
+
+  // Regenerate questions pool
+  allQuestions = generateQuestions();
+
+  // Re-place NPCs
+  placeNpcs();
+
+  // Update HUD
+  updateHud();
 }
 
 // ============================================================
