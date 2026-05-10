@@ -350,476 +350,324 @@ function generateQuestions() {
   const Q = [];
   const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
   const shuffle = (arr) => { const a = [...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-  const randInt = (min,max) => Math.floor(Math.random()*(max-min+1))+min;
 
-  // ===== EXPANDED DATA POOLS =====
-  const subjects1 = ["I","You","We","They","The children","The dogs","My friends","The boys","The girls","The teachers"];
-  const subjects3 = ["He","She","Tom","My mother","The cat","My father","The dog","Mary","The baby","The bird"];
-  const allSubjects = [...subjects1, ...subjects3];
-  const isThird = (s) => subjects3.includes(s);
+  // ===== CLEAN, WELL-FORMED QUESTION TEMPLATES =====
+  // Each template produces a complete, meaningful sentence
 
-  const verbPool = [
-    {base:"play", third:"plays", past:"played", pp:"played", ing:"playing"},
-    {base:"eat", third:"eats", past:"ate", pp:"eaten", ing:"eating"},
-    {base:"go", third:"goes", past:"went", pp:"gone", ing:"going"},
-    {base:"read", third:"reads", past:"read", pp:"read", ing:"reading"},
-    {base:"write", third:"writes", past:"wrote", pp:"written", ing:"writing"},
-    {base:"drink", third:"drinks", past:"drank", pp:"drunk", ing:"drinking"},
-    {base:"sleep", third:"sleeps", past:"slept", pp:"slept", ing:"sleeping"},
-    {base:"run", third:"runs", past:"ran", pp:"run", ing:"running"},
-    {base:"swim", third:"swims", past:"swam", pp:"swum", ing:"swimming"},
-    {base:"sing", third:"sings", past:"sang", pp:"sung", ing:"singing"},
-    {base:"dance", third:"dances", past:"danced", pp:"danced", ing:"dancing"},
-    {base:"cook", third:"cooks", past:"cooked", pp:"cooked", ing:"cooking"},
-    {base:"draw", third:"draws", past:"drew", pp:"drawn", ing:"drawing"},
-    {base:"fly", third:"flies", past:"flew", pp:"flown", ing:"flying"},
-    {base:"ride", third:"rides", past:"rode", pp:"ridden", ing:"riding"},
-    {base:"drive", third:"drives", past:"drove", pp:"driven", ing:"driving"},
-    {base:"speak", third:"speaks", past:"spoke", pp:"spoken", ing:"speaking"},
-    {base:"break", third:"breaks", past:"broke", pp:"broken", ing:"breaking"},
-    {base:"catch", third:"catches", past:"caught", pp:"caught", ing:"catching"},
-    {base:"teach", third:"teaches", past:"taught", pp:"taught", ing:"teaching"},
-    {base:"buy", third:"buys", past:"bought", pp:"bought", ing:"buying"},
-    {base:"bring", third:"brings", past:"brought", pp:"brought", ing:"bringing"},
-    {base:"think", third:"thinks", past:"thought", pp:"thought", ing:"thinking"},
-    {base:"wear", third:"wears", past:"wore", pp:"worn", ing:"wearing"},
-    {base:"build", third:"builds", past:"built", pp:"built", ing:"building"},
-    {base:"send", third:"sends", past:"sent", pp:"sent", ing:"sending"},
-    {base:"spend", third:"spends", past:"spent", pp:"spent", ing:"spending"},
-    {base:"meet", third:"meets", past:"met", pp:"met", ing:"meeting"},
-    {base:"feed", third:"feeds", past:"fed", pp:"fed", ing:"feeding"},
-    {base:"keep", third:"keeps", past:"kept", pp:"kept", ing:"keeping"},
+  // --- TENSES: Simple Present ---
+  const tenses_present = [
+    {q:"She ___ to school every day.", ans:"goes", opts:["go","goes","going","went"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"They ___ football after school.", ans:"play", opts:["play","plays","played","playing"], exp:"複數主詞用原形動詞。"},
+    {q:"He ___ his homework every evening.", ans:"does", opts:["do","does","doing","did"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"We ___ lunch at 12 o'clock.", ans:"have", opts:["has","have","having","had"], exp:"複數主詞用原形動詞。"},
+    {q:"She ___ English very well.", ans:"speaks", opts:["speak","speaks","speaking","spoke"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"I ___ up at 7 every morning.", ans:"get", opts:["gets","get","getting","got"], exp:"I 用原形動詞。"},
+    {q:"He ___ TV after dinner.", ans:"watches", opts:["watch","watches","watching","watched"], exp:"第三人稱單數主詞，動詞加 es。"},
+    {q:"They ___ in the park on Sundays.", ans:"run", opts:["run","runs","running","ran"], exp:"複數主詞用原形動詞。"},
+    {q:"She ___ her teeth twice a day.", ans:"brushes", opts:["brush","brushes","brushing","brushed"], exp:"第三人稱單數主詞，動詞加 es。"},
+    {q:"We ___ dinner at 7 o'clock.", ans:"eat", opts:["eats","eat","eating","ate"], exp:"複數主詞用原形動詞。"},
+    {q:"He ___ to music every night.", ans:"listens", opts:["listen","listens","listening","listened"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"I ___ books in my free time.", ans:"read", opts:["reads","read","reading","readed"], exp:"I 用原形動詞。"},
+    {q:"She ___ her room every Saturday.", ans:"cleans", opts:["clean","cleans","cleaning","cleaned"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"They ___ basketball at school.", ans:"play", opts:["play","plays","played","playing"], exp:"複數主詞用原形動詞。"},
+    {q:"He ___ his dog in the park.", ans:"walks", opts:["walk","walks","walking","walked"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"We ___ to church on Sundays.", ans:"go", opts:["goes","go","going","went"], exp:"複數主詞用原形動詞。"},
+    {q:"She ___ piano every afternoon.", ans:"practices", opts:["practice","practices","practicing","practiced"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"I ___ water every day.", ans:"drink", opts:["drinks","drink","drinking","drank"], exp:"I 用原形動詞。"},
+    {q:"He ___ his grandparents every week.", ans:"visits", opts:["visit","visits","visiting","visited"], exp:"第三人稱單數主詞，動詞加 s。"},
+    {q:"They ___ Chinese at school.", ans:"study", opts:["studies","study","studying","studied"], exp:"複數主詞用原形動詞。"},
   ];
 
-  const activities = ["football","basketball","piano","chess","lunch","dinner","breakfast","homework","school","church","the park","the guitar","kites","a letter","stories","books","movies","TV","games","the piano"];
-  const timeMarkers = ["every day","every morning","every night","every week","every Sunday","every summer","always","usually","often","sometimes"];
-  const pastMarkers = ["yesterday","last night","last week","last year","last Monday","two days ago","a long time ago","in 2020","when I was young","this morning"];
-  const places = ["zoo","park","shop","school","library","garden","beach","museum","hospital","station","airport","cinema","restaurant","supermarket","bank","post office","church","farm","mountain","island"];
-  const nouns_a = ["book","house","dog","cat","car","tree","flower","river","mountain","computer","phone","table","chair","door","window","garden","farm","village","bridge","road"];
-  const nouns_an = ["apple","elephant","orange","egg","umbrella","ice cream","island","hour","honest man","ant","arrow","artist","engine","envelope","idea","octopus","ostrich"];
-  const adjectives_pos = ["tall","short","big","small","fast","slow","old","young","new","long","fat","thin","strong","weak","happy","sad","clever","brave","kind","rich"];
-  const adjectives_comp = [
-    {pos:"tall", comp:"taller", sup:"tallest"}, {pos:"short", comp:"shorter", sup:"shortest"},
-    {pos:"big", comp:"bigger", sup:"biggest"}, {pos:"small", comp:"smaller", sup:"smallest"},
-    {pos:"fast", comp:"faster", sup:"fastest"}, {pos:"slow", comp:"slower", sup:"slowest"},
-    {pos:"old", comp:"older", sup:"oldest"}, {pos:"young", comp:"younger", sup:"youngest"},
-    {pos:"new", comp:"newer", sup:"newest"}, {pos:"long", comp:"longer", sup:"longest"},
-    {pos:"fat", comp:"fatter", sup:"fattest"}, {pos:"thin", comp:"thinner", sup:"thinnest"},
-    {pos:"strong", comp:"stronger", sup:"strongest"}, {pos:"weak", comp:"weaker", sup:"weakest"},
-    {pos:"happy", comp:"happier", sup:"happiest"}, {pos:"sad", comp:"sadder", sup:"saddest"},
-    {pos:"clever", comp:"cleverer", sup:"cleverest"}, {pos:"brave", comp:"braver", sup:"bravest"},
-    {pos:"kind", comp:"kinder", sup:"kindest"}, {pos:"rich", comp:"richer", sup:"richest"},
-    {pos:"good", comp:"better", sup:"best"}, {pos:"bad", comp:"worse", sup:"worst"},
-    {pos:"far", comp:"farther", sup:"farthest"}, {pos:"many", comp:"more", sup:"most"},
-    {pos:"little", comp:"less", sup:"least"},
-  ];
-  const prep_in = ["January","February","March","April","May","June","July","August","September","October","November","December","the morning","the afternoon","the evening","2024","2025","winter","spring","summer","autumn"];
-  const prep_on = ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday","Sunday","the table","the wall","the floor","the bus","the train","the plane","the left","the right","the first floor","the phone","holiday","time","my birthday","Christmas Day"];
-  const prep_at = ["night","home","school","work","the airport","the station","the bus stop","the door","the traffic lights","noon","midnight","7 o'clock","8:30","lunchtime","the weekend","the moment","present","first","last"];
-  const people = ["the boy","the girl","the man","the woman","the teacher","the doctor","the student","the driver","the cook","the singer","the dancer","the writer","the farmer","the worker","the policeman"];
-  const things = ["the book","the letter","the cake","the house","the bridge","the road","the car","the bike","the kite","the ball","the picture","the song","the story","the film","the gift"];
-
-  // ===== GENERATOR FUNCTIONS =====
-
-  function addSimplePresent() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const t = pick(timeMarkers);
-    const correct = isThird(s) ? v.third : v.base;
-    const wrong1 = isThird(s) ? v.base : v.third;
-    const opts = shuffle([correct, wrong1, v.ing, v.past]);
-    const answer = opts.indexOf(correct);
-    const lv = isThird(s) ? pick([3,4]) : 3;
-    Q.push({level:lv, category:"Tenses", question:`${s} ___ ${a} ${t}.`, options:opts, answer, explanation:`${isThird(s) ? "第三人稱單數主詞，動詞加 s/es" : "I/You/複數主詞用原形動詞"}。`});
-  }
-
-  function addSimplePast() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const t = pick(pastMarkers);
-    const opts = shuffle([v.base, v.past, v.ing, v.third]);
-    const answer = opts.indexOf(v.past);
-    Q.push({level:pick([3,4]), category:"Tenses", question:`${s} ___ ${t}.`, options:opts, answer, explanation:`'${t}' 表示過去，用過去式 ${v.past}。`});
-  }
-
-  function addPresentContinuous() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const correct = v.ing;
-    const opts = shuffle([v.base, v.third, v.past, v.ing]);
-    const answer = opts.indexOf(v.ing);
-    Q.push({level:3, category:"Tenses", question:`${s} ___ ${a} now.`, options:opts, answer, explanation:`'Now' 表示正在進行，用 be + V-ing。`});
-  }
-
-  function addPresentPerfect() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const markers = ["already","just","yet","recently","lately"];
-    const m = pick(markers);
-    const correct = v.pp;
-    const opts = shuffle([v.base, v.past, v.pp, v.ing]);
-    const answer = opts.indexOf(v.pp);
-    const lv = pick([4,5]);
-    Q.push({level:lv, category:"Tenses", question:`${s} ___ ${a} ${m}.`, options:opts, answer, explanation:`'${m}' 係現在完成式標記，用 have/has + 過去分詞 ${v.pp}。`});
-  }
-
-  function addFutureWill() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const markers = ["tomorrow","next week","next year","next Monday","soon","later"];
-    const m = pick(markers);
-    const correct = v.base;
-    const opts = shuffle([v.base, v.third, v.past, v.ing]);
-    const answer = opts.indexOf(v.base);
-    Q.push({level:4, category:"Tenses", question:`${s} ___ ${a} ${m}.`, options:opts, answer, explanation:`'${m}' 表示未來，will 後面用原形動詞。`});
-  }
-
-  function addGoingTo() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const correct = v.base;
-    const opts = shuffle([v.base, v.third, v.past, v.ing]);
-    const answer = opts.indexOf(v.base);
-    Q.push({level:4, category:"Tenses", question:`${s} are ___ to ${a} later.`, options:opts, answer, explanation:`be going to 後面用原形動詞。`});
-  }
-
-  function addPastContinuous() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const times = ["at 8 o'clock last night","when I called","at that time","this time yesterday"];
-    const t = pick(times);
-    const correct = v.ing;
-    const opts = shuffle([v.base, v.past, v.ing, v.pp]);
-    const answer = opts.indexOf(v.ing);
-    Q.push({level:5, category:"Tenses", question:`${s} ___ ${a} ${t}.`, options:opts, answer, explanation:`過去進行式：was/were + V-ing，表示過去某個時間正在進行。`});
-  }
-
-  function addPresentPerfectCont() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const durations = ["for two hours","since 9 o'clock","all day","for a long time","since last year"];
-    const d = pick(durations);
-    const correct = v.ing;
-    const opts = shuffle([v.base, v.past, v.pp, v.ing]);
-    const answer = opts.indexOf(v.ing);
-    Q.push({level:6, category:"Tenses", question:`${s} ___ ${a} ${d}.`, options:opts, answer, explanation:`現在完成進行式：have/has + been + V-ing，表示由過去持續到現在的動作。`});
-  }
-
-  function addPastPerfect() {
-    const v = pick(verbPool);
-    const s = pick(allSubjects);
-    const a = pick(activities);
-    const correct = v.pp;
-    const opts = shuffle([v.base, v.past, v.pp, v.ing]);
-    const answer = opts.indexOf(v.pp);
-    Q.push({level:6, category:"Tenses", question:`By the time we arrived, ${s} ___ ${a}.`, options:opts, answer, explanation:`過去的過去用過去完成式 had + 過去分詞 ${v.pp}。`});
-  }
-
-  function addPrepIn() {
-    const t = pick(prep_in);
-    const s = pick(allSubjects);
-    const v = pick(verbPool);
-    const correct = "in";
-    const opts = shuffle(["in","on","at","to"]);
-    const answer = opts.indexOf(correct);
-    Q.push({level:pick([3,4]), category:"Prepositions", question:`${s} go to the beach ___ ${t}.`, options:opts, answer, explanation:`'${t}' 用介詞 in。`});
-  }
-
-  function addPrepOn() {
-    const t = pick(prep_on);
-    const s = pick(allSubjects);
-    const v = pick(verbPool);
-    const correct = "on";
-    const opts = shuffle(["in","on","at","to"]);
-    const answer = opts.indexOf(correct);
-    Q.push({level:pick([3,4]), category:"Prepositions", question:`${s} play football ___ ${t}.`, options:opts, answer, explanation:`'${t}' 用介詞 on。`});
-  }
-
-  function addPrepAt() {
-    const t = pick(prep_at);
-    const s = pick(allSubjects);
-    const v = pick(verbPool);
-    const correct = "at";
-    const opts = shuffle(["in","on","at","to"]);
-    const answer = opts.indexOf(correct);
-    Q.push({level:pick([3,4]), category:"Prepositions", question:`${s} arrive ___ ${t}.`, options:opts, answer, explanation:`'${t}' 用介詞 at。`});
-  }
-
-  function addPrepMixed() {
-    const templates = [
-      {q:"The cat is ___ the table.", ans:"on", opts:["in","on","at","to"]},
-      {q:"The book is ___ the bag.", ans:"in", opts:["in","on","at","to"]},
-      {q:"I put the key ___ the door.", ans:"in", opts:["in","on","at","to"]},
-      {q:"We arrived ___ the airport.", ans:"at", opts:["in","on","at","to"]},
-      {q:"She is sitting ___ the chair.", ans:"on", opts:["in","on","at","to"]},
-      {q:"He goes to school ___ bus.", ans:"by", opts:["by","on","in","with"]},
-      {q:"I go to work ___ foot.", ans:"on", opts:["on","by","in","with"]},
-      {q:"She is good ___ swimming.", ans:"at", opts:["at","in","on","for"]},
-      {q:"He is interested ___ music.", ans:"in", opts:["in","on","at","for"]},
-      {q:"I am afraid ___ spiders.", ans:"of", opts:["of","about","for","with"]},
-      {q:"She is proud ___ her son.", ans:"of", opts:["of","about","for","with"]},
-      {q:"He is different ___ his brother.", ans:"from", opts:["from","to","with","than"]},
-      {q:"I agree ___ you.", ans:"with", opts:["with","to","on","about"]},
-      {q:"She is waiting ___ the bus.", ans:"for", opts:["for","at","on","in"]},
-      {q:"He is looking ___ his keys.", ans:"for", opts:["for","at","after","into"]},
-      {q:"The picture is ___ the wall.", ans:"on", opts:["on","in","at","by"]},
-      {q:"The bank is ___ the park.", ans:"near", opts:["near","next","beside","close"]},
-      {q:"The shop is ___ the cinema and the bank.", ans:"between", opts:["between","among","beside","next"]},
-      {q:"The plane flew ___ the clouds.", ans:"above", opts:["above","over","on","through"]},
-      {q:"The cat ran ___ the road.", ans:"across", opts:["across","through","over","along"]},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([4,5]), category:"Prepositions", question:t.q, options:opts, answer, explanation:`固定介詞搭配：${t.ans}。`});
-  }
-
-  function addArticles() {
-    const items = [...nouns_a.map(w=>({w,art:"a"})), ...nouns_an.map(w=>({w,art:"an"}))];
-    const it = pick(items);
-    const pl = pick(places);
-    const opts = shuffle(["a","an","the",""]);
-    const answer = it.art === "a" ? 0 : 1;
-    Q.push({level:pick([3,4]), category:"Articles", question:`I saw ___ ${it.w} at the ${pl}.`, options:opts, answer, explanation:`'${it.w}' 係${it.art==='an'?'母音':'子音'}開頭，用 ${it.art}。`});
-  }
-
-  function addArticlesThe() {
-    const uniqueThings = ["sun","moon","earth","sky","sea","internet","president","queen","weather","time","money","traffic","environment"];
-    const t = pick(uniqueThings);
-    Q.push({level:4, category:"Articles", question:`___ ${t} is important to us.`, options:["A","An","The",""], answer:2, explanation:`'${t}' 係獨一無二/特定嘅事物，用 the。`});
-  }
-
-  function addComparative() {
-    const adj = pick(adjectives_comp);
-    const s1 = pick(["Tom","My brother","Mary","The elephant","My father","The car","This book","The blue whale"]);
-    const s2 = pick(["his brother","my sister","her friend","the mouse","my mother","the bike","that one","the ant"]);
-    const correct = adj.comp;
-    const opts = shuffle([adj.pos, correct, adj.sup, "more " + adj.pos]);
-    const answer = opts.indexOf(correct);
-    Q.push({level:pick([4,5]), category:"Comparatives", question:`${s1} is ___ than ${s2}.`, options:opts, answer, explanation:`兩個人/物比較用比較級 ${correct}。`});
-  }
-
-  function addSuperlative() {
-    const adj = pick(adjectives_comp);
-    const correct = adj.sup;
-    const opts = shuffle([adj.pos, adj.comp, adj.sup, "most " + adj.pos]);
-    const answer = opts.indexOf(correct);
-    const groups = ["in the class","in the world","in my family","in the school","in the country","of all","I have ever seen"];
-    const g = pick(groups);
-    Q.push({level:pick([4,5]), category:"Comparatives", question:`He is the ___ ${g}.`, options:opts, answer, explanation:`三個或以上比較用最高級 ${correct}。`});
-  }
-
-  function addPronouns() {
-    const templates = [
-      {q:"___ is my best friend.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
-      {q:"I gave ___ a present.", ans:"her", opts:["she","her","hers","herself"], exp:"當受詞用受格 her。"},
-      {q:"This is ___ book.", ans:"my", opts:["I","me","my","mine"], exp:"修飾名詞用所有格 my。"},
-      {q:"The book is ___.", ans:"mine", opts:["my","mine","me","I"], exp:"獨立使用用所有格代名詞 mine。"},
-      {q:"She did it ___.", ans:"herself", opts:["her","hers","herself","she"], exp:"反身代詞 herself 表示「她自己」。"},
-      {q:"___ are good students.", ans:"We", opts:["We","Us","Our","Ours"], exp:"當主詞用主格 We。"},
-      {q:"The teacher praised ___.", ans:"them", opts:["they","them","their","theirs"], exp:"當受詞用受格 them。"},
-      {q:"___ umbrella is this?", ans:"Whose", opts:["Who","Whom","Whose","Which"], exp:"問「誰的用」Whose。"},
-      {q:"___ is the tallest boy in the class.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
-      {q:"Between you and ___, this is a secret.", ans:"me", opts:["I","me","my","mine"], exp:"介詞後面用受格 me。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([3,4,5]), category:"Pronouns", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addConjunctions() {
-    const templates = [
-      {q:"I like apples ___ oranges.", ans:"and", opts:["and","but","or","so"], exp:"連接兩個喜歡的東西用 and。"},
-      {q:"He is poor ___ happy.", ans:"but", opts:["and","but","or","so"], exp:"表示轉折用 but。"},
-      {q:"Do you want tea ___ coffee?", ans:"or", opts:["and","but","or","so"], exp:"表示選擇用 or。"},
-      {q:"It was raining, ___ we stayed home.", ans:"so", opts:["and","but","or","so"], exp:"表示結果用 so。"},
-      {q:"She studied hard ___ she passed the exam.", ans:"and", opts:["and","but","or","because"], exp:"連接兩個相關事件用 and。"},
-      {q:"I was tired, ___ I went to bed early.", ans:"so", opts:["so","but","although","because"], exp:"表示因果用 so。"},
-      {q:"___ it was cold, he went out.", ans:"Although", opts:["Although","Because","So","And"], exp:"表示讓步用 Although。"},
-      {q:"She went to the shop ___ she needed milk.", ans:"because", opts:["because","but","so","although"], exp:"表示原因用 because。"},
-      {q:"I will call you ___ I arrive.", ans:"when", opts:["when","but","or","so"], exp:"表示時間用 when。"},
-      {q:"___ you study hard, you will pass.", ans:"If", opts:["If","When","But","So"], exp:"表示條件用 If。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([4,5]), category:"Conjunctions", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addModals() {
-    const templates = [
-      {q:"You ___ wear a helmet when riding a bike.", ans:"must", opts:["can","must","might","would"], exp:"表示必須、義務用 must。"},
-      {q:"She ___ swim when she was five.", ans:"could", opts:["can","could","must","should"], exp:"表示過去的能力用 could。"},
-      {q:"___ I borrow your pen?", ans:"Can", opts:["Can","Must","Should","Will"], exp:"請求許可用 Can。"},
-      {q:"You ___ see a doctor. You look sick.", ans:"should", opts:["can","must","should","would"], exp:"表示建議用 should。"},
-      {q:"It ___ rain later. Take an umbrella.", ans:"might", opts:["can","must","might","will"], exp:"表示可能性用 might。"},
-      {q:"Students ___ wear uniforms to school.", ans:"must", opts:["can","must","might","could"], exp:"表示規定/義務用 must。"},
-      {q:"___ you please help me?", ans:"Could", opts:["Can","Could","Should","Must"], exp:"禮貌請求用 Could。"},
-      {q:"You ___ eat so much sugar. It's bad for you.", ans:"shouldn't", opts:["shouldn't","couldn't","wouldn't","mustn't"], exp:"表示不應該用 shouldn't。"},
-      {q:"I ___ like a cup of tea, please.", ans:"would", opts:["can","could","would","should"], exp:"禮貌要求用 would like。"},
-      {q:"She ___ be at home. Her car is outside.", ans:"must", opts:["can","must","might","should"], exp:"表示推測（很確定）用 must。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([4,5]), category:"Modal Verbs", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addPassive() {
-    const templates = [
-      {q:"The letter ___ by my mother yesterday.", ans:"was written", opts:["writes","wrote","was written","written"], exp:"被動語態過去式：was + 過去分詞 written。"},
-      {q:"The bridge ___ in 1998.", ans:"was built", opts:["builds","built","was built","is built"], exp:"被動語態過去式：was + 過去分詞 built。"},
-      {q:"English ___ all over the world.", ans:"is spoken", opts:["speaks","spoke","is spoken","spoken"], exp:"被動語態現在式：is + 過去分詞 spoken。"},
-      {q:"The homework ___ by the students every day.", ans:"is done", opts:["does","did","is done","done"], exp:"被動語態現在式：is + 過去分詞 done。"},
-      {q:"The cake ___ by the children yesterday.", ans:"was eaten", opts:["eats","ate","was eaten","eaten"], exp:"被動語態過去式：was + 過去分詞 eaten。"},
-      {q:"The road ___ now.", ans:"is being repaired", opts:["repairs","repaired","is being repaired","repairing"], exp:"被動語態進行式：is being + 過去分詞。"},
-      {q:"The window ___ last night.", ans:"was broken", opts:["breaks","broke","was broken","broken"], exp:"被動語態過去式：was + 過去分詞 broken。"},
-      {q:"Rice ___ in many Asian countries.", ans:"is grown", opts:["grows","grew","is grown","grown"], exp:"被動語態現在式：is + 過去分詞 grown。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([5,6]), category:"Passive", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addConditionals() {
-    const templates = [
-      {q:"If it ___ tomorrow, we will stay home.", ans:"rains", opts:["rain","rains","rained","will rain"], exp:"If 子句（第一類條件句）用簡單現在式表示未來。"},
-      {q:"If I ___ a bird, I would fly to Japan.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反（第二類條件句），if 子句用 were。"},
-      {q:"If she ___ harder, she would have passed.", ans:"had studied", opts:["studies","studied","had studied","has studied"], exp:"與過去事實相反（第三類條件句），if 子句用過去完成式。"},
-      {q:"If you heat water, it ___.", ans:"boils", opts:["boil","boils","boiled","will boil"], exp:"科學事實（零條件句），兩句都用簡單現在式。"},
-      {q:"If I ___ you, I would accept the offer.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反，if 子句用 were（所有人稱）。"},
-      {q:"If they ___ earlier, they would have caught the train.", ans:"had left", opts:["left","had left","leave","have left"], exp:"與過去事實相反，if 子句用過去完成式 had left。"},
-      {q:"If it rains, I ___ take an umbrella.", ans:"will", opts:["will","would","can","could"], exp:"第一類條件句，主要子句用 will + 原形動詞。"},
-      {q:"If I had known, I ___ have told you.", ans:"would", opts:["will","would","could","should"], exp:"與過去事實相反，主要子句用 would have + 過去分詞。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([5,6]), category:"Conditionals", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addReportedSpeech() {
-    const templates = [
-      {q:"She said that she ___ tired.", ans:"was", opts:["is","was","were","be"], exp:"間接引述，時態往回推，is → was。"},
-      {q:"He told me that he ___ the film.", ans:"had seen", opts:["saw","had seen","has seen","sees"], exp:"間接引述，過去式往回推為過去完成式。"},
-      {q:"They said they ___ come the next day.", ans:"would", opts:["will","would","can","could"], exp:"間接引述，will → would。"},
-      {q:"She asked me where I ___.", ans:"lived", opts:["live","lived","living","lives"], exp:"間接引述，現在式往回推為過去式。"},
-      {q:"He said he ___ his homework already.", ans:"had finished", opts:["finished","had finished","has finished","finishes"], exp:"間接引述，現在完成式往回推為過去完成式。"},
-      {q:"She said she ___ to the party.", ans:"was going", opts:["is going","was going","goes","went"], exp:"間接引述，現在進行式往回推為過去進行式。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([5,6]), category:"Reported Speech", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addRelativeClauses() {
-    const templates = [
-      {q:"The boy ___ won the prize is my cousin.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人（the boy）用 who。"},
-      {q:"The book ___ I bought is interesting.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物（the book）用 which。"},
-      {q:"The woman ___ lives next door is a doctor.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人用 who。"},
-      {q:"The car ___ he drives is very fast.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物用 which。"},
-      {q:"The girl ___ father is a teacher is my friend.", ans:"whose", opts:["which","who","whom","whose"], exp:"表示所有格用 whose。"},
-      {q:"The house ___ we bought last year is big.", ans:"which", opts:["which","who","where","when"], exp:"修飾物用 which。"},
-      {q:"The place ___ we met is a park.", ans:"where", opts:["which","who","where","when"], exp:"修飾地方用 where。"},
-      {q:"The day ___ I met her was sunny.", ans:"when", opts:["which","who","where","when"], exp:"修飾時間用 when。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([5,6]), category:"Relative Clauses", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addInversion() {
-    const templates = [
-      {q:"Never ___ such a beautiful sunset.", ans:"have I seen", opts:["I have seen","have I seen","I saw","did I saw"], exp:"Never 開頭要倒裝：Never + have + S + p.p."},
-      {q:"Not only ___ hard, but she is also kind.", ans:"does she work", opts:["she works","does she work","she work","working she"], exp:"Not only 開頭要倒裝。"},
-      {q:"Hardly ___ the door when the phone rang.", ans:"had I opened", opts:["I had opened","had I opened","I opened","did I open"], exp:"Hardly 開頭要倒裝，用過去完成式。"},
-      {q:"Only then ___ the truth.", ans:"did I understand", opts:["I understood","did I understand","I understand","understand I"], exp:"Only then 開頭要倒裝。"},
-      {q:"Seldom ___ such a good opportunity.", ans:"do we have", opts:["we have","do we have","we had","had we"], exp:"Seldom 開頭要倒裝。"},
-      {q:"No sooner ___ than it started to rain.", ans:"had we left", opts:["we had left","had we left","we left","did we leave"], exp:"No sooner 開頭要倒裝，用過去完成式。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:6, category:"Inversion", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addPlurals() {
-    const templates = [
-      {q:"There are three ___ in the box.", ans:"mice", opts:["mouse","mouses","mice","mices"], exp:"Mouse 的複數是不規則變化 mice。"},
-      {q:"The ___ are playing in the garden.", ans:"children", opts:["child","childs","children","childrens"], exp:"Child 的複數是 children。"},
-      {q:"I saw two ___ at the zoo.", ans:"deer", opts:["deers","deer","deeres","deeries"], exp:"Deer 的單複數同形。"},
-      {q:"The ___ are eating grass.", ans:"sheep", opts:["sheeps","sheep","sheepes","sheeplings"], exp:"Sheep 的單複數同形。"},
-      {q:"There are many ___ in the pond.", ans:"fish", opts:["fishs","fish","fishes","fishies"], exp:"Fish 的複數通常係 fish。"},
-      {q:"The ___ are running in the field.", ans:"geese", opts:["goose","gooses","geese","geeses"], exp:"Goose 的複數是 geese。"},
-      {q:"I bought five ___ at the market.", ans:"tomatoes", opts:["tomato","tomatos","tomatoes","tomatose"], exp:"以 o 結尾的有生命名詞，複數加 es。"},
-      {q:"The ___ are very tall.", ans:"men", opts:["man","mans","men","mens"], exp:"Man 的複數是 men。"},
-      {q:"She has two ___.", ans:"teeth", opts:["tooths","teeth","tooth","teeths"], exp:"Tooth 的複數是 teeth。"},
-      {q:"The ___ are flying south.", ans:"birds", opts:["bird","birds","birdes","birdies"], exp:"Bird 的複數係 birds（規則變化）。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([3,4]), category:"Plurals", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  function addSubjectVerb() {
-    const templates = [
-      {q:"The news ___ very interesting.", ans:"is", opts:["is","are","were","be"], exp:"News 係不可數名詞，用單數動詞 is。"},
-      {q:"The police ___ looking for the thief.", ans:"are", opts:["is","are","was","has"], exp:"Police 係集合名詞，用複數動詞 are。"},
-      {q:"Five dollars ___ enough.", ans:"is", opts:["is","are","were","have"], exp:"金額作為一個整體，用單數動詞。"},
-      {q:"The team ___ playing well.", ans:"is", opts:["is","are","were","be"], exp:"Team 作為一個整體用單數動詞 is。"},
-      {q:"My family ___ very large.", ans:"is", opts:["is","are","were","have"], exp:"Family 作為一個整體用單數動詞。"},
-      {q:"The children ___ playing outside.", ans:"are", opts:["is","are","was","be"], exp:"Children 係複數，用 are。"},
-      {q:"Every student ___ a textbook.", ans:"has", opts:["have","has","having","had"], exp:"Every + 名詞係單數，用 has。"},
-      {q:"Neither Tom nor Mary ___ coming.", ans:"is", opts:["is","are","were","be"], exp:"Neither...nor 動詞同最近嘅主詞一致（Mary → is）。"},
-    ];
-    const t = pick(templates);
-    const opts = shuffle(t.opts);
-    const answer = opts.indexOf(t.ans);
-    Q.push({level:pick([4,5,6]), category:"Subject-Verb Agreement", question:t.q, options:opts, answer, explanation:t.exp});
-  }
-
-  // ===== GENERATE LARGE POOL =====
-  // Run each generator many times to build a huge pool
-  const generators = [
-    addSimplePresent, addSimplePast, addPresentContinuous, addPresentPerfect,
-    addFutureWill, addGoingTo, addPastContinuous, addPresentPerfectCont, addPastPerfect,
-    addPrepIn, addPrepOn, addPrepAt, addPrepMixed,
-    addArticles, addArticlesThe,
-    addComparative, addSuperlative,
-    addPronouns, addConjunctions, addModals,
-    addPassive, addConditionals, addReportedSpeech,
-    addRelativeClauses, addInversion, addPlurals, addSubjectVerb,
+  // --- TENSES: Simple Past ---
+  const tenses_past = [
+    {q:"She ___ to the park yesterday.", ans:"went", opts:["goes","go","going","went"], exp:"'Yesterday' 表示過去，用過去式 went。"},
+    {q:"They ___ football last Sunday.", ans:"played", opts:["play","plays","playing","played"], exp:"'Last Sunday' 表示過去，用過去式 played。"},
+    {q:"He ___ his homework last night.", ans:"did", opts:["do","does","doing","did"], exp:"'Last night' 表示過去，用過去式 did。"},
+    {q:"We ___ lunch at school yesterday.", ans:"had", opts:["has","have","having","had"], exp:"'Yesterday' 表示過去，用過去式 had。"},
+    {q:"She ___ a beautiful song yesterday.", ans:"sang", opts:["sings","sing","singing","sang"], exp:"'Yesterday' 表示過去，用過去式 sang。"},
+    {q:"I ___ up early this morning.", ans:"got", opts:["gets","get","getting","got"], exp:"'This morning' 表示過去，用過去式 got。"},
+    {q:"He ___ a book last week.", ans:"read", opts:["reads","read","reading","readed"], exp:"'Last week' 表示過去，用過去式 read。"},
+    {q:"They ___ to the beach last summer.", ans:"went", opts:["goes","go","going","went"], exp:"'Last summer' 表示過去，用過去式 went。"},
+    {q:"She ___ a cake for my birthday.", ans:"made", opts:["makes","make","making","made"], exp:"表示過去，用過去式 made。"},
+    {q:"We ___ a film yesterday.", ans:"watched", opts:["watch","watches","watching","watched"], exp:"'Yesterday' 表示過去，用過去式 watched。"},
+    {q:"He ___ his friend last Monday.", ans:"met", opts:["meets","meet","meeting","met"], exp:"'Last Monday' 表示過去，用過去式 met。"},
+    {q:"They ___ dinner at a restaurant.", ans:"ate", opts:["eats","eat","eating","ate"], exp:"表示過去，用過去式 ate。"},
+    {q:"She ___ a letter to her friend.", ans:"wrote", opts:["writes","write","writing","wrote"], exp:"表示過去，用過去式 wrote。"},
+    {q:"I ___ a cold last week.", ans:"caught", opts:["catches","catch","catching","caught"], exp:"'Last week' 表示過去，用過去式 caught。"},
+    {q:"He ___ the bus to school yesterday.", ans:"took", opts:["takes","take","taking","took"], exp:"'Yesterday' 表示過去，用過去式 took。"},
   ];
 
-  // Run each generator multiple times
-  for(let round = 0; round < 8; round++) {
-    generators.forEach(fn => fn());
-  }
+  // --- TENSES: Present Continuous ---
+  const tenses_prescont = [
+    {q:"She ___ to music now.", ans:"is listening", opts:["listens","listened","is listening","listening"], exp:"'Now' 表示正在進行，用 is + V-ing。"},
+    {q:"They ___ football at the moment.", ans:"are playing", opts:["play","played","are playing","playing"], exp:"'At the moment' 表示正在進行，用 are + V-ing。"},
+    {q:"He ___ his homework right now.", ans:"is doing", opts:["does","did","is doing","doing"], exp:"'Right now' 表示正在進行，用 is + V-ing。"},
+    {q:"We ___ dinner now.", ans:"are having", opts:["have","had","are having","having"], exp:"'Now' 表示正在進行，用 are + V-ing。"},
+    {q:"She ___ a book at the moment.", ans:"is reading", opts:["reads","read","is reading","reading"], exp:"'At the moment' 表示正在進行，用 is + V-ing。"},
+    {q:"I ___ to you now.", ans:"am talking", opts:["talk","talked","am talking","talking"], exp:"'Now' 表示正在進行，用 am + V-ing。"},
+    {q:"He ___ TV right now.", ans:"is watching", opts:["watches","watched","is watching","watching"], exp:"'Right now' 表示正在進行，用 is + V-ing。"},
+    {q:"They ___ in the pool now.", ans:"are swimming", opts:["swim","swam","are swimming","swimming"], exp:"'Now' 表示正在進行，用 are + V-ing。"},
+  ];
 
-  // Deduplicate by question text
-  const seen = new Set();
-  const unique = [];
-  for(const q of Q) {
-    if(!seen.has(q.question)) {
-      seen.add(q.question);
-      unique.push(q);
+  // --- TENSES: Present Perfect ---
+  const tenses_presperf = [
+    {q:"She ___ already ___ her homework.", ans:"has done", opts:["has done","did","does","have done"], exp:"'Already' 表示已經完成，用 has + 過去分詞。"},
+    {q:"They ___ just ___ lunch.", ans:"have eaten", opts:["have eaten","ate","eat","has eaten"], exp:"'Just' 表示剛剛完成，用 have + 過去分詞。"},
+    {q:"He ___ never ___ to Japan.", ans:"has been", opts:["has been","was","is","have been"], exp:"'Never' 表示經驗，用 has + 過去分詞。"},
+    {q:"We ___ already ___ the film.", ans:"have seen", opts:["have seen","saw","see","has seen"], exp:"'Already' 表示已經完成，用 have + 過去分詞。"},
+    {q:"She ___ just ___ a cake.", ans:"has made", opts:["has made","made","makes","have made"], exp:"'Just' 表示剛剛完成，用 has + 過去分詞。"},
+    {q:"I ___ already ___ my breakfast.", ans:"have finished", opts:["have finished","finished","finish","has finished"], exp:"'Already' 表示已經完成，用 have + 過去分詞。"},
+    {q:"He ___ never ___ sushi before.", ans:"has tried", opts:["has tried","tried","tries","have tried"], exp:"'Never...before' 表示經驗，用 has + 過去分詞。"},
+    {q:"They ___ just ___ the station.", ans:"have left", opts:["have left","left","leave","has left"], exp:"'Just' 表示剛剛完成，用 have + 過去分詞。"},
+  ];
+
+  // --- TENSES: Future (will) ---
+  const tenses_future = [
+    {q:"She ___ to the park tomorrow.", ans:"will go", opts:["goes","went","will go","going"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
+    {q:"They ___ football next Sunday.", ans:"will play", opts:["play","played","will play","playing"], exp:"'Next Sunday' 表示未來，用 will + 原形動詞。"},
+    {q:"He ___ his homework tonight.", ans:"will do", opts:["does","did","will do","doing"], exp:"'Tonight' 表示未來，用 will + 原形動詞。"},
+    {q:"We ___ lunch at a restaurant tomorrow.", ans:"will have", opts:["have","had","will have","having"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
+    {q:"She ___ a song at the concert.", ans:"will sing", opts:["sings","sang","will sing","singing"], exp:"表示未來，用 will + 原形動詞。"},
+    {q:"I ___ you tomorrow.", ans:"will call", opts:["call","called","will call","calling"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
+    {q:"He ___ a new car next year.", ans:"will buy", opts:["buys","bought","will buy","buying"], exp:"'Next year' 表示未來，用 will + 原形動詞。"},
+    {q:"They ___ to London next month.", ans:"will travel", opts:["travel","traveled","will travel","traveling"], exp:"'Next month' 表示未來，用 will + 原形動詞。"},
+  ];
+
+  // --- TENSES: be going to ---
+  const tenses_goingto = [
+    {q:"She is ___ to visit her grandma.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
+    {q:"They are ___ to play football.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
+    {q:"He is ___ to study hard.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
+    {q:"We are ___ to have a party.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
+    {q:"I am ___ to read a book.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
+  ];
+
+  // --- TENSES: Past Continuous ---
+  const tenses_pastcont = [
+    {q:"She ___ a book when I called her.", ans:"was reading", opts:["read","was reading","reads","reading"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
+    {q:"They ___ football when it started to rain.", ans:"were playing", opts:["played","were playing","play","playing"], exp:"過去進行式：were + V-ing，表示過去某個時間正在進行。"},
+    {q:"He ___ his homework at 8 last night.", ans:"was doing", opts:["did","was doing","does","doing"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
+    {q:"We ___ dinner when the phone rang.", ans:"were having", opts:["had","were having","have","having"], exp:"過去進行式：were + V-ing，表示過去某個時間正在進行。"},
+    {q:"I ___ to music when you arrived.", ans:"was listening", opts:["listened","was listening","listen","listening"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
+  ];
+
+  // --- TENSES: Present Perfect Continuous ---
+  const tenses_presperfcont = [
+    {q:"She ___ English for five years.", ans:"has been studying", opts:["studies","has been studying","studied","studying"], exp:"現在完成進行式：has + been + V-ing，表示由過去持續到現在。"},
+    {q:"They ___ for two hours.", ans:"have been waiting", opts:["waited","have been waiting","wait","waiting"], exp:"現在完成進行式：have + been + V-ing，表示由過去持續到現在。"},
+    {q:"He ___ since 9 o'clock.", ans:"has been working", opts:["worked","has been working","works","working"], exp:"現在完成進行式：has + been + V-ing，表示由過去持續到現在。"},
+    {q:"We ___ all day.", ans:"have been playing", opts:["played","have been playing","play","playing"], exp:"現在完成進行式：have + been + V-ing，表示由過去持續到現在。"},
+  ];
+
+  // --- TENSES: Past Perfect ---
+  const tenses_pastperf = [
+    {q:"She ___ already ___ when I arrived.", ans:"had left", opts:["left","had leaves","had left","leaves"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
+    {q:"They ___ dinner before we came.", ans:"had finished", opts:["finished","had finishes","had finished","finish"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
+    {q:"He ___ his homework before he went out.", ans:"had done", opts:["did","had does","had done","does"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
+    {q:"We ___ the film before they told us.", ans:"had seen", opts:["saw","had sees","had seen","see"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
+  ];
+
+  // --- PREPOSITIONS: in/on/at ---
+  const prepositions = [
+    {q:"My birthday is ___ March.", ans:"in", opts:["in","on","at","to"], exp:"月份前用介詞 in。"},
+    {q:"The party is ___ Saturday.", ans:"on", opts:["in","on","at","to"], exp:"星期前用介詞 on。"},
+    {q:"I go to school ___ 8 o'clock.", ans:"at", opts:["in","on","at","to"], exp:"時間前用介詞 at。"},
+    {q:"She was born ___ 2015.", ans:"in", opts:["in","on","at","to"], exp:"年份前用介詞 in。"},
+    {q:"We have lunch ___ noon.", ans:"at", opts:["in","on","at","to"], exp:"noon 前用介詞 at。"},
+    {q,"The book is ___ the table.", ans:"on", opts:["in","on","at","to"], exp:"在桌子上面用介詞 on。"},
+    {q:"The picture is ___ the wall.", ans:"on", opts:["in","on","at","to"], exp:"在牆上面用介詞 on。"},
+    {q:"She is sitting ___ the chair.", ans:"on", opts:["in","on","at","to"], exp:"在椅子上面用介詞 on。"},
+    {q:"He goes to school ___ bus.", ans:"by", opts:["by","on","in","with"], exp:"乘搭交通工具用介詞 by。"},
+    {q:"I go to work ___ foot.", ans:"on", opts:["on","by","in","with"], exp:"步行用 on foot。"},
+    {q:"She is good ___ swimming.", ans:"at", opts:["at","in","on","for"], exp:"be good at 表示擅長。"},
+    {q:"He is interested ___ music.", ans:"in", opts:["in","on","at","for"], exp:"be interested in 表示對...有興趣。"},
+    {q:"I am afraid ___ spiders.", ans:"of", opts:["of","about","for","with"], exp:"be afraid of 表示害怕。"},
+    {q,"She is proud ___ her son.", ans:"of", opts:["of","about","for","with"], exp:"be proud of 表示以...為榮。"},
+    {q:"He is different ___ his brother.", ans:"from", opts:["from","to","with","than"], exp:"be different from 表示與...不同。"},
+    {q:"I agree ___ you.", ans:"with", opts:["with","to","on","about"], exp:"agree with 表示同意某人。"},
+    {q:"She is waiting ___ the bus.", ans:"for", opts:["for","at","on","in"], exp:"wait for 表示等待。"},
+    {q:"He is looking ___ his keys.", ans:"for", opts:["for","at","after","into"], exp:"look for 表示尋找。"},
+    {q:"The bank is ___ the park.", ans:"near", opts:["near","next","beside","close"], exp:"near 表示在...附近。"},
+    {q:"The shop is ___ the cinema and the bank.", ans:"between", opts:["between","among","beside","next"], exp:"between 表示在兩者之間。"},
+    {q:"The plane flew ___ the clouds.", ans:"above", opts:["above","over","on","through"], exp:"above 表示在...上方。"},
+    {q:"The cat ran ___ the road.", ans:"across", opts:["across","through","over","along"], exp:"across 表示橫過。"},
+    {q:"I was born ___ Hong Kong.", ans:"in", opts:["in","on","at","to"], exp:"城市前用介詞 in。"},
+    {q:"She arrived ___ the airport.", ans:"at", opts:["in","on","at","to"], exp:"arrive at 表示到達某地點。"},
+    {q:"We will go ___ holiday next week.", ans:"on", opts:["in","on","at","to"], exp:"on holiday 表示度假。"},
+    {q:"He is sitting ___ the sofa.", ans:"on", opts:["in","on","at","to"], exp:"在沙發上用介詞 on。"},
+    {q:"The keys are ___ the drawer.", ans:"in", opts:["in","on","at","to"], exp:"在抽屜裡用介詞 in。"},
+    {q:"She put the letter ___ the envelope.", ans:"in", opts:["in","on","at","to"], exp:"在信封裡用介詞 in。"},
+    {q:"We met ___ Monday morning.", ans:"on", opts:["in","on","at","to"], exp:"特定的早上用介詞 on。"},
+    {q:"The train leaves ___ 9:30.", ans:"at", opts:["in","on","at","to"], exp:"時間前用介詞 at。"},
+  ];
+
+  // --- ARTICLES ---
+  const articles = [
+    {q:"I saw ___ elephant at the zoo.", ans:"an", opts:["a","an","the",""], exp:"elephant 母音開頭，用 an。"},
+    {q:"She is ___ teacher.", ans:"a", opts:["a","an","the",""], exp:"teacher 子音開頭，用 a。"},
+    {q:"He is ___ honest man.", ans:"an", opts:["a","an","the",""], exp:"honest 母音開頭（h 不發音），用 an。"},
+    {q:"I have ___ apple and ___ orange.", ans:"an", opts:["a","an","the",""], exp:"apple 母音開頭，用 an。"},
+    {q:"She is ___ best student in the class.", ans:"the", opts:["a","an","the",""], exp:"最高級前用 the。"},
+    {q:"___ sun is very hot today.", ans:"The", opts:["A","An","The",""], exp:"太陽是獨一無二的事物，用 the。"},
+    {q:"I need ___ umbrella. It's raining.", ans:"an", opts:["a","an","the",""], exp:"umbrella 母音開頭，用 an。"},
+    {q:"He is ___ university student.", ans:"a", opts:["a","an","the",""], exp:"university 子音開頭（u 發 /juː/），用 a。"},
+    {q:"She plays ___ piano very well.", ans:
+
+  // --- COMPARATIVES & SUPERLATIVES ---
+  const comparatives = [
+    {q:"Tom is ___ than his brother.", ans:"taller", opts:["tall","taller","tallest","more tall"], exp:"兩個人比較用比較級 taller。"},
+    {q:"Mary is ___ than her sister.", ans:"shorter", opts:["short","shorter","shortest","more short"], exp:"兩個人比較用比較級 shorter。"},
+    {q:"The elephant is ___ than the mouse.", ans:"bigger", opts:["big","bigger","biggest","more big"], exp:"兩個人比較用比較級 bigger。"},
+    {q:"This book is ___ than that one.", ans:"longer", opts:["long","longer","longest","more long"], exp:"兩個人比較用比較級 longer。"},
+    {q:"He is the ___ in the class.", ans:"tallest", opts:["tall","taller","tallest","most tall"], exp:"三個或以上比較用最高級 tallest。"},
+    {q:"She is the ___ girl in her family.", ans:"youngest", opts:["young","younger","youngest","most young"], exp:"三個或以上比較用最高級 youngest。"},
+    {q:"This is the ___ film I have ever seen.", ans:"best", opts:["good","better","best","well"], exp:"三個或以上比較用最高級 best。"},
+    {q:"He is the ___ student in the school.", ans:"smartest", opts:["smart","smarter","smartest","most smart"], exp:"三個或以上比較用最高級 smartest。"},
+    {q:"The blue whale is the ___ animal in the world.", ans:"largest", opts:["large","larger","largest","most large"], exp:"三個或以上比較用最高級 largest。"},
+    {q:"She runs ___ than her brother.", ans:"faster", opts:["fast","faster","fastest","more fast"], exp:"兩個人比較用比較級 faster。"},
+  ];
+
+  // --- PRONOUNS ---
+  const pronouns = [
+    {q:"___ is my best friend.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
+    {q:"I gave ___ a present.", ans:"her", opts:["she","her","hers","herself"], exp:"當受詞用受格 her。"},
+    {q:"This is ___ book.", ans:"my", opts:["I","me","my","mine"], exp:"修飾名詞用所有格 my。"},
+    {q:"The book is ___.", ans:"mine", opts:["my","mine","me","I"], exp:"獨立使用用所有格代名詞 mine。"},
+    {q:"She did it ___.", ans:"herself", opts:["her","hers","herself","she"], exp:"反身代詞 herself 表示「她自己」。"},
+    {q:"___ are good students.", ans:"We", opts:["We","Us","Our","Ours"], exp:"當主詞用主格 We。"},
+    {q:"The teacher praised ___.", ans:"them", opts:["they","them","their","theirs"], exp:"當受詞用受格 them。"},
+    {q:"___ umbrella is this?", ans:"Whose", opts:["Who","Whom","Whose","Which"], exp:"問「誰的用」Whose。"},
+    {q:"Between you and ___, this is a secret.", ans:"me", opts:["I","me","my","mine"], exp:"介詞後面用受格 me。"},
+    {q:"___ is the tallest boy in the class.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
+  ];
+
+  // --- CONJUNCTIONS ---
+  const conjunctions = [
+    {q:"I like apples ___ oranges.", ans:"and", opts:["and","but","or","so"], exp:"連接兩個喜歡的東西用 and。"},
+    {q:"He is poor ___ happy.", ans:"but", opts:["and","but","or","so"], exp:"表示轉折用 but。"},
+    {q:"Do you want tea ___ coffee?", ans:"or", opts:["and","but","or","so"], exp:"表示選擇用 or。"},
+    {q:"It was raining, ___ we stayed home.", ans:"so", opts:["and","but","or","so"], exp:"表示結果用 so。"},
+    {q:"She studied hard ___ she passed the exam.", ans:"and", opts:["and","but","or","because"], exp:"連接兩個相關事件用 and。"},
+    {q:"I was tired, ___ I went to bed early.", ans:"so", opts:["so","but","although","because"], exp:"表示因果用 so。"},
+    {q:"___ it was cold, he went out.", ans:"Although", opts:["Although","Because","So","And"], exp:"表示讓步用 Although。"},
+    {q:"She went to the shop ___ she needed milk.", ans:"because", opts:["because","but","so","although"], exp:"表示原因用 because。"},
+    {q:"I will call you ___ I arrive.", ans:"when", opts:["when","but","or","so"], exp:"表示時間用 when。"},
+    {q:"___ you study hard, you will pass.", ans:"If", opts:["If","When","But","So"], exp:"表示條件用 If。"},
+  ];
+
+  // --- MODAL VERBS ---
+  const modals = [
+    {q:"You ___ wear a helmet when riding a bike.", ans:"must", opts:["can","must","might","would"], exp:"表示必須、義務用 must。"},
+    {q:"She ___ swim when she was five.", ans:"could", opts:["can","could","must","should"], exp:"表示過去的能力用 could。"},
+    {q:"___ I borrow your pen?", ans:"Can", opts:["Can","Must","Should","Will"], exp:"請求許可用 Can。"},
+    {q:"You ___ see a doctor. You look sick.", ans:"should", opts:["can","must","should","would"], exp:"表示建議用 should。"},
+    {q:"It ___ rain later. Take an umbrella.", ans:"might", opts:["can","must","might","will"], exp:"表示可能性用 might。"},
+    {q:"Students ___ wear uniforms to school.", ans:"must", opts:["can","must","might","could"], exp:"表示規定/義務用 must。"},
+    {q:"___ you please help me?", ans:"Could", opts:["Can","Could","Should","Must"], exp:"禮貌請求用 Could。"},
+    {q:"You ___ eat so much sugar. It's bad for you.", ans:"shouldn't", opts:["shouldn't","couldn't","wouldn't","mustn't"], exp:"表示不應該用 shouldn't。"},
+    {q:"I ___ like a cup of tea, please.", ans:"would", opts:["can","could","would","should"], exp:"禮貌要求用 would like。"},
+    {q:"She ___ be at home. Her car is outside.", ans:"must", opts:["can","must","might","should"], exp:"表示推測（很確定）用 must。"},
+  ];
+
+  // --- PASSIVE VOICE ---
+  const passive = [
+    {q:"The letter ___ by my mother yesterday.", ans:"was written", opts:["writes","wrote","was written","written"], exp:"被動語態過去式：was + 過去分詞 written。"},
+    {q:"The bridge ___ in 1998.", ans:"was built", opts:["builds","built","was built","is built"], exp:"被動語態過去式：was + 過去分詞 built。"},
+    {q:"English ___ all over the world.", ans:"is spoken", opts:["speaks","spoke","is spoken","spoken"], exp:"被動語態現在式：is + 過去分詞 spoken。"},
+    {q:"The homework ___ by the students every day.", ans:"is done", opts:["does","did","is done","done"], exp:"被動語態現在式：is + 過去分詞 done。"},
+    {q:"The cake ___ by the children yesterday.", ans:"was eaten", opts:["eats","ate","was eaten","eaten"], exp:"被動語態過去式：was + 過去分詞 eaten。"},
+    {q:"The road ___ now.", ans:"is being repaired", opts:["repairs","repaired","is being repaired","repairing"], exp:"被動語態進行式：is being + 過去分詞。"},
+    {q:"The window ___ last night.", ans:"was broken", opts:["breaks","broke","was broken","broken"], exp:"被動語態過去式：was + 過去分詞 broken。"},
+    {q:"Rice ___ in many Asian countries.", ans:"is grown", opts:["grows","grew","is grown","grown"], exp:"被動語態現在式：is + 過去分詞 grown。"},
+  ];
+
+  // --- CONDITIONALS ---
+  const conditionals = [
+    {q:"If it ___ tomorrow, we will stay home.", ans:"rains", opts:["rain","rains","rained","will rain"], exp:"If 子句（第一類條件句）用簡單現在式表示未來。"},
+    {q:"If I ___ a bird, I would fly to Japan.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反（第二類條件句），if 子句用 were。"},
+    {q:"If she ___ harder, she would have passed.", ans:"had studied", opts:["studies","studied","had studied","has studied"], exp:"與過去事實相反（第三類條件句），if 子句用過去完成式。"},
+    {q:"If you heat water, it ___.", ans:"boils", opts:["boil","boils","boiled","will boil"], exp:"科學事實（零條件句），兩句都用簡單現在式。"},
+    {q:"If I ___ you, I would accept the offer.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反，if 子句用 were（所有人稱）。"},
+    {q:"If they ___ earlier, they would have caught the train.", ans:"had left", opts:["left","had left","leave","have left"], exp:"與過去事實相反，if 子句用過去完成式 had left。"},
+    {q:"If it rains, I ___ take an umbrella.", ans:"will", opts:["will","would","can","could"], exp:"第一類條件句，主要子句用 will + 原形動詞。"},
+    {q:"If I had known, I ___ have told you.", ans:"would", opts:["will","would","could","should"], exp:"與過去事實相反，主要子句用 would have + 過去分詞。"},
+  ];
+
+  // --- REPORTED SPEECH ---
+  const reported = [
+    {q:"She said that she ___ tired.", ans:"was", opts:["is","was","were","be"], exp:"間接引述，時態往回推，is → was。"},
+    {q:"He told me that he ___ the film.", ans:"had seen", opts:["saw","had seen","has seen","sees"], exp:"間接引述，過去式往回推為過去完成式。"},
+    {q:"They said they ___ come the next day.", ans:"would", opts:["will","would","can","could"], exp:"間接引述，will → would。"},
+    {q:"She asked me where I ___.", ans:"lived", opts:["live","lived","living","lives"], exp:"間接引述，現在式往回推為過去式。"},
+    {q:"He said he ___ his homework already.", ans:"had finished", opts:["finished","had finished","has finished","finishes"], exp:"間接引述，現在完成式往回推為過去完成式。"},
+    {q:"She said she ___ to the party.", ans:"was going", opts:["is going","was going","goes","went"], exp:"間接引述，現在進行式往回推為過去進行式。"},
+  ];
+
+  // --- RELATIVE CLAUSES ---
+  const relative = [
+    {q:"The boy ___ won the prize is my cousin.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人（the boy）用 who。"},
+    {q:"The book ___ I bought is interesting.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物（the book）用 which。"},
+    {q:"The woman ___ lives next door is a doctor.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人用 who。"},
+    {q:"The car ___ he drives is very fast.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物用 which。"},
+    {q:"The girl ___ father is a teacher is my friend.", ans:"whose", opts:["which","who","whom","whose"], exp:"表示所有格用 whose。"},
+    {q:"The house ___ we bought last year is big.", ans:"which", opts:["which","who","where","when"], exp:"修飾物用 which。"},
+    {q:"The place ___ we met is a park.", ans:"where", opts:["which","who","where","when"], exp:"修飾地方用 where。"},
+    {q:"The day ___ I met her was sunny.", ans:"when", opts:["which","who","where","when"], exp:"修飾時間用 when。"},
+  ];
+
+  // --- INVERSION ---
+  const inversion = [
+    {q:"Never ___ such a beautiful sunset.", ans:"have I seen", opts:["I have seen","have I seen","I saw","did I saw"], exp:"Never 開頭要倒裝：Never + have + S + p.p."},
+    {q:"Not only ___ hard, but she is also kind.", ans:"does she work", opts:["she works","does she work","she work","working she"], exp:"Not only 開頭要倒裝。"},
+    {q:"Hardly ___ the door when the phone rang.", ans:"had I opened", opts:["I had opened","had I opened","I opened","did I open"], exp:"Hardly 開頭要倒裝，用過去完成式。"},
+    {q:"Only then ___ the truth.", ans:"did I understand", opts:["I understood","did I understand","I understand","understand I"], exp:"Only then 開頭要倒裝。"},
+    {q:"Seldom ___ such a good opportunity.", ans:"do we have", opts:["we have","do we have","we had","had we"], exp:"Seldom 開頭要倒裝。"},
+    {q:"No sooner ___ than it started to rain.", ans:"had we left", opts:["we had left","had we left","we left","did we leave"], exp:"No sooner 開頭要倒裝，用過去完成式。"},
+  ];
+
+  // --- PLURALS ---
+  const plurals = [
+    {q:"There are three ___ in the box.", ans:"mice", opts:["mouse","mouses","mice","mices"], exp:"Mouse 的複數是不規則變化 mice。"},
+    {q:"The ___ are playing in the garden.", ans:"children", opts:["child","childs","children","childrens"], exp:"Child 的複數是 children。"},
+    {q:"I saw two ___ at the zoo.", ans:"deer", opts:["deers","deer","deeres","deeries"], exp:"Deer 的單複數同形。"},
+    {q:"The ___ are eating grass.", ans:"sheep", opts:["sheeps","sheep","sheepes","sheeplings"], exp:"Sheep 的單複數同形。"},
+    {q:"There are many ___ in the pond.", ans:"fish", opts:["fishs","fish","fishes","fishies"], exp:"Fish 的複數通常係 fish。"},
+    {q:"The ___ are running in the field.", ans:"geese", opts:["goose","gooses","geese","geeses"], exp:"Goose 的複數是 geese。"},
+    {q:"I bought five ___ at the market.", ans:"tomatoes", opts:["tomato","tomatos","tomatoes","tomatose"], exp:"以 o 結尾的有生命名詞，複數加 es。"},
+    {q:"The ___ are very tall.", ans:"men", opts:["man","mans","men","mens"], exp:"Man 的複數是 men。"},
+    {q:"She has two ___.", ans:"teeth", opts:["tooths","teeth","tooth","teeths"], exp:"Tooth 的複數是 teeth。"},
+    {q:"The ___ are flying south.", ans:"birds", opts:["bird","birds","birdes","birdies"], exp:"Bird 的複數係 birds（規則變化）。"},
+  ];
+
+  // --- SUBJECT-VERB AGREEMENT ---
+  const subjverb = [
+    {q:"The news ___ very interesting.", ans:"is", opts:["is","are","were","be"], exp:"News 係不可數名詞，用單數動詞 is。"},
+    {q:"The police ___ looking for the thief.", ans:"are", opts:["is","are","was","has"], exp:"Police 係集合名詞，用複數動詞 are。"},
+    {q:"Five dollars ___ enough.", ans:"is", opts:["is","are","were","have"], exp:"金額作為一個整體，用單數動詞。"},
+    {q:"The team ___ playing well.", ans:"is", opts:["is","are","were","be"], exp:"Team 作為一個整體用單數動詞 is。"},
+    {q:"My family ___ very large.", ans:"is", opts:["is","are","were","have"], exp:"Family 作為一個整體用單數動詞。"},
+    {q:"The children ___ playing outside.", ans:"are", opts:["is","are","was","be"], exp:"Children 係複數，用 are。"},
+    {q:"Every student ___ a textbook.", ans:"has", opts:["have","has","having","had"], exp:"Every + 名詞係單數，用 has。"},
+    {q:"Neither Tom nor Mary ___ coming.", ans:"is", opts:["is","are","were","be"], exp:"Neither...nor 動詞同最近嘅主詞一致（Mary → is）。"},
+  ];
+
+  // ===== COMPILE ALL QUESTIONS =====
+  var allTemplates = [].concat(tenses_present, tenses_past, tenses_prescont, tenses_presperf, tenses_future, tenses_goingto, tenses_pastcont, tenses_presperfcont, tenses_pastperf, prepositions, articles, comparatives, pronouns, conjunctions, modals, passive, conditionals, reported, relative, inversion, plurals, subjverb);
+
+  // Pick a random question from the pool
+  var q = pick(allTemplates);
+  Q.push({level: q.level || 3, category: q.category || "Grammar", question: q.q, options: shuffle(q.opts), answer: q.opts.indexOf(q.ans), explanation: q.exp});
+
+  // Deduplicate
+  var seen = new Set();
+  var unique = [];
+  for(var i = 0; i < Q.length; i++) {
+    if(!seen.has(Q[i].question)) {
+      seen.add(Q[i].question);
+      unique.push(Q[i]);
     }
   }
-
-  // Shuffle
-  return unique.sort(() => Math.random() - 0.5);
+  return unique.sort(function() { return Math.random() - 0.5; });
 }
 
 // ============================================================
