@@ -119,8 +119,9 @@ for(let i=0;i<120;i++){const s=document.createElement('div');s.className='star';
 let allQuestions=[];
 let state={level:0,category:'all',sessionQuestions:[],currentIndex:0,score:0,streak:0,bestStreak:0,xp:0,levelNum:1,answered:false,perSession:20};
 
-,
-    {level:3,category:"Tenses",question:"They ___ football yesterday.",options:["play","plays","played","playing"],answer:2,explanation:"'Yesterday' 表示過去，用過去式 played。"},
+function generateSamples(){
+  const samples=[
+    {level:3,category:"Tenses",question:"They ___ football yesterday.",options:["play","plays","played","playing"],answer:2,explanation:"'Yesterday' 表示過去，用過去式 played."},
     {level:3,category:"Prepositions",question:"The cat is ___ the table.",options:["in","on","at","to"],answer:1,explanation:"在桌子上面用 on。"},
     {level:3,category:"Articles",question:"I saw ___ elephant at the zoo.",options:["a","an","the",""],answer:1,explanation:"Elephant 母音開頭，用 an。"},
     {level:3,category:"Plurals",question:"There are three ___ in the box.",options:["mouse","mouses","mice","mices"],answer:2,explanation:"Mouse 的複數是不規則變化 mice。"},
@@ -156,7 +157,7 @@ let state={level:0,category:'all',sessionQuestions:[],currentIndex:0,score:0,str
       const s=subjects[i%subjects.length];
       const a=acts[i%acts.length];
       if(s==="He"||s==="She"||s==="Tom"||s==="My mother"||s==="The cat"){
-        samples.push({level:lv,category:"Tenses",question:`${s} ___ ${a} every day.`,options:[v,vs,v+"ing",v+"ed"],answer:options.indexOf(vs),explanation:"第三人稱單數，動詞加 s。"});
+        samples.push({level:lv,category:"Tenses",question:`${s} ___ ${a} every day.`,options:[v,vs,v+"ing",v+"ed"],answer:1,explanation:"第三人稱單數，動詞加 s。"});
       } else {
         samples.push({level:lv,category:"Tenses",question:`${s} ___ ${a} every day.`,options:[v,vs,v+"ing",v+"ed"],answer:0,explanation:"複數主詞用原形動詞。"});
       }
