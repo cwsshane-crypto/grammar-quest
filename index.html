@@ -3,115 +3,71 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>🏰 Grammar Quest — 奇幻文法大冒險</title>
+<title>Grammar Quest</title>
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
-body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;color:#e0e0e0;overflow:hidden;height:100vh;width:100vw;touch-action:manipulation}
-
-/* ===== WORLD MAP ===== */
+body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;color:#e0e0e0;overflow:hidden;height:100vh;width:100vw}
 #worldMap{position:relative;width:100%;height:100%;overflow:hidden;cursor:crosshair;background:#1a1a2e}
 #mapCanvas{position:absolute;top:0;left:0;width:3200px;height:2400px;transition:transform 0.15s ease-out;transform-origin:0 0}
-
-/* Isometric ground tiles */
 .tile{position:absolute;width:64px;height:32px}
 .tile-grass{background:linear-gradient(135deg,#4a8c3f,#3a7d32);border:1px solid rgba(255,255,255,0.08)}
 .tile-grass2{background:linear-gradient(135deg,#3f8a35,#35802c);border:1px solid rgba(255,255,255,0.08)}
 .tile-path{background:linear-gradient(135deg,#c4a265,#b8963f);border:1px solid rgba(255,255,255,0.1)}
-.tile-water{background:linear-gradient(135deg,#2980b9,#1a6da0);border:1px solid rgba(255,255,255,0.1);animation:waterShimmer 3s ease-in-out infinite}
+.tile-water{background:linear-gradient(135deg,#2980b9,#1a6da0);border:1px solid rgba(255,255,255,0.1)}
 .tile-sand{background:linear-gradient(135deg,#d4a574,#c4955a);border:1px solid rgba(255,255,255,0.08)}
 .tile-stone{background:linear-gradient(135deg,#7f8c8d,#6c7a7d);border:1px solid rgba(255,255,255,0.08)}
 .tile-dirt{background:linear-gradient(135deg,#8b6914,#7a5c12);border:1px solid rgba(255,255,255,0.08)}
 .tile-snow{background:linear-gradient(135deg,#ecf0f1,#d5dbdb);border:1px solid rgba(255,255,255,0.15)}
-.tile-lava{background:linear-gradient(135deg,#e74c3c,#c0392b);border:1px solid rgba(255,255,255,0.1);animation:lavaGlow 2s ease-in-out infinite}
-@keyframes waterShimmer{0%,100%{opacity:0.9}50%{opacity:1}}
-@keyframes lavaGlow{0%,100%{box-shadow:0 0 8px rgba(231,76,60,0.4)}50%{box-shadow:0 0 16px rgba(231,76,60,0.7)}}
-
-/* Isometric diamond shape */
 .iso-tile{clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)}
-
-/* Map objects - 3D styled */
-.map-object{position:absolute;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s;z-index:5}
-.map-object:hover{transform:scale(1.2)}
-
-/* Trees - 3D look */
 .tree-3d{position:absolute;font-size:32px;filter:drop-shadow(2px 4px 3px rgba(0,0,0,0.4));z-index:3}
-.tree-3d::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:20px;height:8px;background:rgba(0,0,0,0.3);border-radius:50%}
-
-/* Buildings */
-.building{position:absolute;display:flex;align-items:center;justify-content:center;font-size:36px;filter:drop-shadow(3px 5px 4px rgba(0,0,0,0.5));z-index:4}
-
-/* NPC - 3D styled */
-.npc{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all 0.2s;z-index:10;border:3px solid rgba(255,255,255,0.3);box-shadow:0 4px 8px rgba(0,0,0,0.4),inset 0 -2px 4px rgba(0,0,0,0.2)}
-.npc:hover{transform:scale(1.25);border-color:#ffd700;box-shadow:0 6px 16px rgba(255,215,0,0.3)}
+.building{position:absolute;font-size:36px;filter:drop-shadow(3px 5px 4px rgba(0,0,0,0.5));z-index:4}
+.npc{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all 0.2s;z-index:10;border:3px solid rgba(255,255,255,0.3);box-shadow:0 4px 8px rgba(0,0,0,0.4)}
+.npc:hover{transform:scale(1.25);border-color:#ffd700}
 .npc.answered{opacity:0.4;border-color:#666;filter:grayscale(0.8)}
-.npc .npc-name{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:#fff;text-shadow:0 1px 4px #000;background:rgba(0,0,0,0.7);padding:2px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.15)}
-
-/* Player - 3D character */
+.npc .npc-name{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:#fff;text-shadow:0 1px 4px #000;background:rgba(0,0,0,0.7);padding:2px 8px;border-radius:10px}
 #player{position:absolute;z-index:20;pointer-events:none;transition:left 0.15s ease-out,top 0.15s ease-out}
 #player .char-sprite{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(2px 4px 4px rgba(0,0,0,0.5))}
 #player .char-layer{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px}
 #player .char-shadow{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:28px;height:10px;background:rgba(0,0,0,0.35);border-radius:50%;z-index:-1}
-
-/* Player bounce animation */
-@keyframes playerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
-.walking .char-sprite{animation:playerBounce 0.3s ease-in-out infinite}
-
-/* Click indicator */
-#clickIndicator{position:absolute;width:30px;height:30px;border:3px solid #ffd700;border-radius:50%;pointer-events:none;z-index:15;animation:clickPulse 0.6s ease-out forwards}
-@keyframes clickPulse{0%{transform:translate(-50%,-50%) scale(0.3);opacity:1}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
-
-/* ===== HUD ===== */
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.walking .char-sprite{animation:bounce 0.3s ease-in-out infinite}
+#clickIndicator{position:absolute;width:30px;height:30px;border:3px solid #ffd700;border-radius:50%;pointer-events:none;z-index:15;animation:pulse 0.6s ease-out forwards}
+@keyframes pulse{0%{transform:translate(-50%,-50%) scale(0.3);opacity:1}100%{transform:translate(-50%,-50%) scale(1.5);opacity:0}}
 #hud{position:fixed;top:0;left:0;right:0;display:flex;justify-content:space-between;align-items:center;padding:8px 16px;background:linear-gradient(180deg,rgba(0,0,0,0.7),transparent);z-index:100;pointer-events:none}
 #hud>*{pointer-events:auto}
 .hud-group{display:flex;gap:12px;align-items:center}
 .hud-item{display:flex;align-items:center;gap:4px;background:rgba(0,0,0,0.5);padding:6px 12px;border-radius:20px;font-size:14px;font-weight:700}
 .hud-item .icon{font-size:18px}
-
-/* ===== BUTTONS ===== */
 .btn{padding:10px 20px;border-radius:12px;border:none;font-family:inherit;font-size:14px;font-weight:700;cursor:pointer;transition:all 0.2s}
 .btn:hover{transform:scale(1.05)}
 .btn-primary{background:linear-gradient(135deg,#7b2ff7,#00d2ff);color:#fff}
 .btn-gold{background:linear-gradient(135deg,#f39c12,#e67e22);color:#fff}
-.btn-green{background:linear-gradient(135deg,#27ae60,#2ecc71);color:#fff}
 .btn-danger{background:linear-gradient(135deg,#c0392b,#e74c3c);color:#fff}
-.btn-sm{padding:6px 14px;font-size:12px}
-
-/* ===== PANELS ===== */
 .panel{position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:rgba(20,20,40,0.95);border:2px solid #7b2ff7;border-radius:20px;padding:24px;z-index:200;max-width:90vw;max-height:85vh;overflow-y:auto;display:none;box-shadow:0 0 40px rgba(123,47,247,0.3)}
-.panel.show{display:block;animation:panelIn 0.3s ease}
-@keyframes panelIn{from{opacity:0;transform:translate(-50%,-50%) scale(0.9)}to{opacity:1;transform:translate(-50%,-50%) scale(1)}}
+.panel.show{display:block}
 .panel-title{font-size:1.4em;font-weight:900;text-align:center;margin-bottom:16px;background:linear-gradient(135deg,#ffd700,#ff6b6b);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
 .panel-close{position:absolute;top:10px;right:14px;font-size:24px;cursor:pointer;color:#888}
 .panel-close:hover{color:#fff}
-
-/* ===== SHOP ===== */
 #shopPanel{width:500px}
 .shop-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}
-.shop-item{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative}
+.shop-item{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:14px;padding:12px;text-align:center;cursor:pointer;transition:all 0.2s}
 .shop-item:hover{border-color:#ffd700;background:rgba(255,215,0,0.1)}
 .shop-item.owned{border-color:#27ae60;opacity:0.7}
-.shop-item.owned::after{content:'✓';position:absolute;top:4px;right:8px;color:#2ecc71;font-weight:900}
 .shop-item .item-icon{font-size:32px;margin-bottom:4px}
 .shop-item .item-name{font-size:12px;font-weight:700;margin-bottom:2px}
 .shop-item .item-price{font-size:11px;color:#ffd700}
 .shop-item.owned .item-price{color:#2ecc71}
 .shop-category{margin:16px 0 8px;font-size:1.1em;font-weight:700;color:#ffd700;border-bottom:1px solid rgba(255,215,0,0.2);padding-bottom:4px}
-
-/* ===== INVENTORY ===== */
 #inventoryPanel{width:500px}
 .inv-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
-.inv-item{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:all 0.2s;position:relative}
+.inv-item{background:rgba(255,255,255,0.06);border:2px solid rgba(255,255,255,0.1);border-radius:12px;padding:10px;text-align:center;cursor:pointer;transition:all 0.2s}
 .inv-item:hover{border-color:#00d2ff}
 .inv-item.equipped{border-color:#ffd700;box-shadow:0 0 10px rgba(255,215,0,0.3)}
-.inv-item.equipped::after{content:'E';position:absolute;top:2px;right:6px;font-size:10px;color:#ffd700;font-weight:900}
 .inv-item .item-icon{font-size:28px}
 .inv-item .item-name{font-size:10px;margin-top:2px}
-
-/* ===== QUESTION OVERLAY ===== */
 #questionOverlay{position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,0.8);z-index:150;display:none;align-items:center;justify-content:center}
 #questionOverlay.show{display:flex}
-#questionCard{background:rgba(20,20,40,0.97);border:2px solid #7b2ff7;border-radius:20px;padding:28px;width:520px;max-width:90vw;animation:slideIn 0.3s ease}
-@keyframes slideIn{from{opacity:0;transform:translateY(20px)}to{opacity:1;transform:translateY(0)}}
+#questionCard{background:rgba(20,20,40,0.97);border:2px solid #7b2ff7;border-radius:20px;padding:28px;width:520px;max-width:90vw}
 .q-header{text-align:center;margin-bottom:12px}
 .q-npc-icon{font-size:40px}
 .q-npc-name{font-weight:700;color:#ffd700;margin-top:4px}
@@ -130,12 +86,8 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;
 .q-feedback .feedback-title{font-weight:700;font-size:1.05em}
 .q-feedback .feedback-exp{margin-top:6px;color:#bbb;font-size:0.9em;line-height:1.4}
 .q-coins-earned{text-align:center;margin-top:10px;font-size:1.1em;color:#ffd700;font-weight:700}
-
-/* ===== BOTTOM BAR ===== */
 #bottomBar{position:fixed;bottom:0;left:0;right:0;display:flex;justify-content:center;gap:10px;padding:10px;background:linear-gradient(0deg,rgba(0,0,0,0.7),transparent);z-index:100}
 #bottomBar .btn{padding:12px 24px;font-size:15px}
-
-/* ===== START SCREEN ===== */
 #startScreen{position:fixed;top:0;left:0;right:0;bottom:0;background:linear-gradient(135deg,#1a1a2e,#16213e,#0f3460);z-index:300;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center}
 #startScreen.hidden{display:none}
 #startScreen .logo{font-size:5em;margin-bottom:10px}
@@ -143,1177 +95,398 @@ body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;
 #startScreen .subtitle{color:#8899aa;font-size:1.1em;margin-bottom:30px;line-height:1.6}
 #startScreen .start-btn{padding:18px 50px;border-radius:16px;border:none;background:linear-gradient(135deg,#7b2ff7,#00d2ff);color:white;font-family:inherit;font-size:1.3em;font-weight:700;cursor:pointer;transition:all 0.3s}
 #startScreen .start-btn:hover{transform:scale(1.05);box-shadow:0 6px 25px rgba(123,47,247,0.5)}
-
-/* ===== FLOATING TEXT ===== */
 .float-text{position:fixed;font-weight:900;font-size:1.5em;pointer-events:none;z-index:250;animation:floatUp 1.5s ease-out forwards}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-60px)}}
 .float-gold{color:#ffd700}
-.float-xp{color:#00d2ff}
 .float-red{color:#e74c3c}
-
-/* ===== MINIMAP ===== */
 #minimap{position:fixed;bottom:60px;right:10px;width:150px;height:112px;background:rgba(0,0,0,0.6);border:2px solid rgba(255,255,255,0.2);border-radius:10px;z-index:90;overflow:hidden}
-#minimapView{position:absolute;border:2px solid #ffd700;border-radius:2px;pointer-events:none}
-#minimapPlayer{position:absolute;width:6px;height:6px;background:#00d2ff;border-radius:50%;pointer-events:none}
-
-/* ===== RESPONSIVE ===== */
-@media(max-width:600px){
-  .shop-grid{grid-template-columns:repeat(2,1fr)}
-  .inv-grid{grid-template-columns:repeat(3,1fr)}
-  .q-options{grid-template-columns:1fr}
-  #minimap{width:100px;height:75px}
-}
+#minimapView{position:absolute;border:2px solid #ffd700;border-radius:2px}
+#minimapPlayer{position:absolute;width:6px;height:6px;background:#00d2ff;border-radius:50%}
+@media(max-width:600px){.shop-grid{grid-template-columns:repeat(2,1fr)}.inv-grid{grid-template-columns:repeat(3,1fr)}.q-options{grid-template-columns:1fr}#minimap{width:100px;height:75px}}
 </style>
 </head>
 <body>
-
-<!-- START SCREEN -->
 <div id="startScreen">
-  <div class="logo">🏰</div>
-  <h1>Grammar Quest</h1>
-  <div class="subtitle">奇幻文法大冒險！<br>探索奇幻世界，挑戰 NPC 賺取金幣，<br>收集裝備，成為 Grammar Hero！</div>
-  <button class="start-btn" onclick="startGame()">⚔️ 開始冒險</button>
+<div class="logo">&#x1F3F0;</div>
+<h1>Grammar Quest</h1>
+<div class="subtitle">&#x5947;&#x5E7B;&#x6587;&#x6CD5;&#x5927;&#x5192;&#x96AA;&#xFF01;<br>&#x63A2;&#x7D22;&#x5947;&#x5E7B;&#x4E16;&#x754C;&#xFF0C;&#x6311;&#x6230; NPC &#x8CFA;&#x53D6;&#x91D1;&#x5E63;&#xFF0C;<br>&#x6536;&#x96C6;&#x88DD;&#x5099;&#xFF0C;&#x6210;&#x70BA; Grammar Hero&#xFF01;</div>
+<button class="start-btn" onclick="startGame()">&#x2694;&#xFE0F; &#x958B;&#x59CB;&#x5192;&#x96AA;</button>
 </div>
-
-<!-- WORLD MAP -->
 <div id="worldMap">
-  <div id="mapCanvas"></div>
-  <!-- Player -->
-  <div id="player">
-    <div class="char-body">
-      <div class="char-layer" id="charShadow"></div>
-      <div class="char-layer" id="charPants">🩳</div>
-      <div class="char-layer" id="charBody">👕</div>
-      <div class="char-layer" id="charShoes">👟</div>
-      <div class="char-layer" id="charHat">🧢</div>
-      <div class="char-layer" id="charCape"></div>
-      <div class="char-layer" id="charWeapon"></div>
-      <div class="char-layer" id="charBase">🧙</div>
-    </div>
-  </div>
+<div id="mapCanvas"></div>
+<div id="player">
+<div class="char-sprite">
+<div class="char-layer" id="charShadow"></div>
+<div class="char-layer" id="charPants">&#x1FA73;</div>
+<div class="char-layer" id="charBody">&#x1F455;</div>
+<div class="char-layer" id="charShoes">&#x1F45F;</div>
+<div class="char-layer" id="charHat">&#x1F9E2;</div>
+<div class="char-layer" id="charCape"></div>
+<div class="char-layer" id="charWeapon"></div>
+<div class="char-layer" id="charBase">&#x1F9D9;</div>
 </div>
-
-<!-- HUD -->
+</div>
+</div>
 <div id="hud">
-  <div class="hud-group">
-    <div class="hud-item"><span class="icon">🪙</span><span id="coinDisplay">0</span></div>
-    <div class="hud-item"><span class="icon">⚡</span><span id="xpDisplay">0</span> XP</div>
-    <div class="hud-item"><span class="icon">⭐</span><span id="scoreDisplay">0</span></div>
-  </div>
-  <div class="hud-group">
-    <div class="hud-item"><span class="icon">📝</span><span id="answeredDisplay">0</span>/<span id="totalNpcDisplay">0</span></div>
-  </div>
+<div class="hud-group">
+<div class="hud-item"><span class="icon">&#x1FA99;</span><span id="coinDisplay">0</span></div>
+<div class="hud-item"><span class="icon">&#x26A1;</span><span id="xpDisplay">0</span> XP</div>
+<div class="hud-item"><span class="icon">&#x2B50;</span><span id="scoreDisplay">0</span></div>
 </div>
-
-<!-- BOTTOM BAR -->
+<div class="hud-group">
+<div class="hud-item"><span class="icon">&#x1F4DD;</span><span id="answeredDisplay">0</span>/<span id="totalNpcDisplay">0</span></div>
+</div>
+</div>
 <div id="bottomBar">
-  <button class="btn btn-gold" onclick="openShop()">🛒 商店</button>
-  <button class="btn btn-primary" onclick="openInventory()">🎒 裝備</button>
-  <button class="btn btn-danger" onclick="confirmReset()">🔄 重置</button>
+<button class="btn btn-gold" onclick="openShop()">&#x1F6D2; &#x5546;&#x5E97;</button>
+<button class="btn btn-primary" onclick="openInventory()">&#x1F392; &#x88DD;&#x5099;</button>
+<button class="btn btn-danger" onclick="confirmReset()">&#x1F504; &#x91CD;&#x7F6E;</button>
 </div>
-
-<!-- MINIMAP -->
-<div id="minimap">
-  <div id="minimapView"></div>
-  <div id="minimapPlayer"></div>
-</div>
-
-<!-- QUESTION OVERLAY -->
+<div id="minimap"><div id="minimapView"></div><div id="minimapPlayer"></div></div>
 <div id="questionOverlay">
-  <div id="questionCard">
-    <div class="q-header">
-      <div class="q-npc-icon" id="qNpcIcon">🧙</div>
-      <div class="q-npc-name" id="qNpcName">智者</div>
-    </div>
-    <div class="q-text" id="qText"></div>
-    <div class="q-options" id="qOptions"></div>
-    <div class="q-feedback" id="qFeedback">
-      <div class="feedback-title" id="qFeedbackTitle"></div>
-      <div class="feedback-exp" id="qFeedbackExp"></div>
-    </div>
-    <div class="q-coins-earned" id="qCoinsEarned"></div>
-  </div>
+<div id="questionCard">
+<div class="q-header"><div class="q-npc-icon" id="qNpcIcon">&#x1F9D9;</div><div class="q-npc-name" id="qNpcName">&#x667A;&#x8005;</div></div>
+<div class="q-text" id="qText"></div>
+<div class="q-options" id="qOptions"></div>
+<div class="q-feedback" id="qFeedback"><div class="feedback-title" id="qFeedbackTitle"></div><div class="feedback-exp" id="qFeedbackExp"></div></div>
+<div class="q-coins-earned" id="qCoinsEarned"></div>
 </div>
-
-<!-- SHOP PANEL -->
+</div>
 <div id="shopPanel" class="panel">
-  <span class="panel-close" onclick="closeShop()">✕</span>
-  <div class="panel-title">🛒 裝備商店</div>
-  <div style="text-align:center;margin-bottom:12px;color:#ffd700;font-weight:700">🪙 <span id="shopCoins">0</span> 金幣</div>
-  <div id="shopContent"></div>
+<span class="panel-close" onclick="closeShop()">&#x2715;</span>
+<div class="panel-title">&#x1F6D2; &#x88DD;&#x5099;&#x5546;&#x5E97;</div>
+<div style="text-align:center;margin-bottom:12px;color:#ffd700;font-weight:700">&#x1FA99; <span id="shopCoins">0</span> &#x91D1;&#x5E63;</div>
+<div id="shopContent"></div>
 </div>
-
-<!-- INVENTORY PANEL -->
 <div id="inventoryPanel" class="panel">
-  <span class="panel-close" onclick="closeInventory()">✕</span>
-  <div class="panel-title">🎒 我的裝備</div>
-  <div id="invContent"></div>
+<span class="panel-close" onclick="closeInventory()">&#x2715;</span>
+<div class="panel-title">&#x1F392; &#x6211;&#x7684;&#x88DD;&#x5099;</div>
+<div id="invContent"></div>
 </div>
-
 <script>
-// ============================================================
-// DATA
-// ============================================================
-
-const EQUIPMENT = {
-  hat: [
-    {id:'hat_0', name:'無', icon:'', price:0},
-    {id:'hat_1', name:'布帽', icon:'🧢', price:10},
-    {id:'hat_2', name:'皮帽', icon:'🎩', price:25},
-    {id:'hat_3', name:'法師帽', icon:'🧙', price:50},
-    {id:'hat_4', name:'皇冠', icon:'👑', price:100},
-  ],
-  body: [
-    {id:'body_0', name:'無', icon:'', price:0},
-    {id:'body_1', name:'布衣', icon:'👕', price:15},
-    {id:'body_2', name:'皮甲', icon:'🦺', price:35},
-    {id:'body_3', name:'鎖甲', icon:'🛡️', price:60},
-    {id:'body_4', name:'龍鱗甲', icon:'🐉', price:120},
-  ],
-  pants: [
-    {id:'pants_0', name:'無', icon:'', price:0},
-    {id:'pants_1', name:'布褲', icon:'🩳', price:10},
-    {id:'pants_2', name:'皮褲', icon:'👖', price:25},
-    {id:'pants_3', name:'鎧褲', icon:'🦿', price:50},
-    {id:'pants_4', name:'符文褲', icon:'✨', price:100},
-  ],
-  shoes: [
-    {id:'shoes_0', name:'無', icon:'', price:0},
-    {id:'shoes_1', name:'布鞋', icon:'👟', price:8},
-    {id:'shoes_2', name:'皮靴', icon:'🥾', price:20},
-    {id:'shoes_3', name:'鐵靴', icon:'🦶', price:40},
-    {id:'shoes_4', name:'飛龍靴', icon:'🔥', price:80},
-  ],
-  weapon: [
-    {id:'weapon_0', name:'無', icon:'', price:0},
-    {id:'weapon_1', name:'木劍', icon:'🗡️', price:20},
-    {id:'weapon_2', name:'鐵劍', icon:'⚔️', price:45},
-    {id:'weapon_3', name:'法杖', icon:'🪄', price:70},
-    {id:'weapon_4', name:'聖劍', icon:'🌟', price:150},
-  ],
-  cape: [
-    {id:'cape_0', name:'無', icon:'', price:0},
-    {id:'cape_1', name:'布披風', icon:'🧣', price:12},
-    {id:'cape_2', name:'絲披風', icon:'🎀', price:30},
-    {id:'cape_3', name:'魔法披風', icon:'🌙', price:55},
-    {id:'cape_4', name:'龍翼披風', icon:'🦋', price:110},
-  ],
-};
-
-const NPC_TYPES = ['🧙','🧝','🧛','🧚','🧜','🦹','👸','🤴','🧞','🧟','👹','👺','🐉','🦊','🐺'];
-
-const NPC_NAMES = {
-  '🧙':'智者','🧝':'精靈','🧛':'吸血鬼','🧚':'仙子','🧜':'海靈',
-  '🦹':'英雄','👸':'公主','🤴':'王子','🧞':'燈神','🧟':'亡靈',
-  '👹':'鬼王','👺':'妖怪','🐉':'龍','🦊':'狐仙','🐺':'狼王'
-};
-
-// Map regions
-const REGIONS = [
-  {name:'翡翠森林', col:0, row:0, w:12, h:10, type:'forest'},
-  {name:'黃金草原', col:12, row:0, w:12, h:8, type:'grass'},
-  {name:'藍寶石湖', col:24, row:0, w:14, h:10, type:'water'},
-  {name:'石牙山脈', col:0, row:10, w:10, h:10, type:'mountain'},
-  {name:'皇家城堡', col:10, row:8, w:14, h:12, type:'castle'},
-  {name:'星光沙漠', col:24, row:10, w:16, h:8, type:'desert'},
-  {name:'暗影沼澤', col:0, row:20, w:12, h:10, type:'swamp'},
-  {name:'水晶洞穴', col:12, row:20, w:12, h:10, type:'cave'},
-  {name:'雲端之城', col:24, row:18, w:16, h:12, type:'sky'},
+var EQUIPMENT={hat:[{id:"hat_0",name:"&#x7121;",icon:"",price:0},{id:"hat_1",name:"&#x5E03;&#x5E3D;",icon:"&#x1F9E2;",price:10},{id:"hat_2",name:"&#x76AE;&#x5E3D;",icon:"&#x1F3A9;",price:25},{id:"hat_3",name:"&#x6CD5;&#x5E2B;&#x5E3D;",icon:"&#x1F9D9;",price:50},{id:"hat_4",name:"&#x7687;&#x51A0;",icon:"&#x1F451;",price:100}],body:[{id:"body_0",name:"&#x7121;",icon:"",price:0},{id:"body_1",name:"&#x5E03;&#x8863;",icon:"&#x1F455;",price:15},{id:"body_2",name:"&#x76AE;&#x7532;",icon:"&#x1F9BA;",price:35},{id:"body_3",name:"&#x93C8;&#x7532;",icon:"&#x1F6E1;&#xFE0F;",price:60},{id:"body_4",name:"&#x9F8D;&#x9C57;&#x7532;",icon:"&#x1F409;",price:120}],pants:[{id:"pants_0",name:"&#x7121;",icon:"",price:0},{id:"pants_1",name:"&#x5E03;&#x8932;",icon:"&#x1FA73;",price:10},{id:"pants_2",name:"&#x76AE;&#x8932;",icon:"&#x1F456;",price:25},{id:"pants_3",name:"&#x93A7;&#x8932;",icon:"&#x1F9BF;",price:50},{id:"pants_4",name:"&#x7B26;&#x6587;&#x8932;",icon:"&#x2728;",price:100}],shoes:[{id:"shoes_0",name:"&#x7121;",icon:"",price:0},{id:"shoes_1",name:"&#x5E03;&#x978B;",icon:"&#x1F45F;",price:8},{id:"shoes_2",name:"&#x76AE;&#x9774;",icon:"&#x1F97E;",price:20},{id:"shoes_3",name:"&#x9435;&#x9774;",icon:"&#x1F9B6;",price:40},{id:"shoes_4",name:"&#x98DB;&#x9F8D;&#x9774;",icon:"&#x1F525;",price:80}],weapon:[{id:"weapon_0",name:"&#x7121;",icon:"",price:0},{id:"weapon_1",name:"&#x6728;&#x528D;",icon:"&#x1F5E1;&#xFE0F;",price:20},{id:"weapon_2",name:"&#x9435;&#x528D;",icon:"&#x2694;&#xFE0F;",price:45},{id:"weapon_3",name:"&#x6CD5;&#x6756;",icon:"&#x1F384;",price:70},{id:"weapon_4",name:"&#x8056;&#x528D;",icon:"&#x1F31F;",price:150}],cape:[{id:"cape_0",name:"&#x7121;",icon:"",price:0},{id:"cape_1",name:"&#x5E03;&#x62AB;&#x98A8;",icon:"&#x1F9E3;",price:12},{id:"cape_2",name:"&#x7D72;&#x62AB;&#x98A8;",icon:"&#x1F380;",price:30},{id:"cape_3",name:"&#x9B54;&#x6CD5;&#x62AB;&#x98A8;",icon:"&#x1F319;",price:55},{id:"cape_4",name:"&#x9F8D;&#x7FFC;&#x62AB;&#x98A8;",icon:"&#x1F98B;",price:110}]};
+var NPC_TYPES=["&#x1F9D9;","&#x1F9DD;","&#x1F9DB;","&#x1F9DA;","&#x1F9DC;","&#x1F9B9;","&#x1F478;","&#x1F934;","&#x1F9DE;","&#x1F9DF;","&#x1F479;","&#x1F47A;","&#x1F409;","&#x1F98A;","&#x1F43A;"];
+var NPC_NAMES={};
+NPC_TYPES.forEach(function(t,i){var names=["&#x667A;&#x8005;","&#x7CBE;&#x9748;","&#x5438;&#x8840;&#x9B3C;","&#x4ED9;&#x5B50;","&#x6D77;&#x9748;","&#x82F1;&#x96C4;","&#x516C;&#x4E3B;","&#x738B;&#x5B50;","&#x71C8;&#x795E;","&#x4EA1;&#x9748;","&#x9B3C;&#x738B;","&#x5996;&#x602A;","&#x9F8D;","&#x72D0;&#x4ED9;","&#x72FC;&#x738B;"];NPC_NAMES[t]=names[i]});
+var REGIONS=[{name:"&#x7FE1;&#x7FE0;&#x68EE;&#x6797;",col:0,row:0,w:12,h:10,type:"forest"},{name:"&#x9EC3;&#x91D1;&#x8349;&#x539F;",col:12,row:0,w:12,h:8,type:"grass"},{name:"&#x85CD;&#x5BF6;&#x77F3;&#x6E56;",col:24,row:0,w:14,h:10,type:"water"},{name:"&#x77F3;&#x7259;&#x5C71;&#x8108;",col:0,row:10,w:10,h:10,type:"mountain"},{name:"&#x7687;&#x5BB6;&#x57CE;&#x5821;",col:10,row:8,w:14,h:12,type:"castle"},{name:"&#x661F;&#x5149;&#x6C99;&#x6F20;",col:24,row:10,w:16,h:8,type:"desert"},{name:"&#x6697;&#x5F71;&#x6CBC;&#x6FA4;",col:0,row:20,w:12,h:10,type:"swamp"},{name:"&#x6C34;&#x6676;&#x6D1E;&#x7A9F;",col:12,row:20,w:12,h:10,type:"cave"},{name:"&#x96F2;&#x7AEF;&#x4E4B;&#x57CE;",col:24,row:18,w:16,h:12,type:"sky"}];
+var TILE_W=64,TILE_H=32,MAP_COLS=50,MAP_ROWS=50;
+var TERRAIN={forest:["tile-grass","tile-grass2"],grass:["tile-grass","tile-grass2"],water:["tile-water"],mountain:["tile-stone","tile-stone"],castle:["tile-stone","tile-path"],desert:["tile-sand","tile-sand"],swamp:["tile-dirt","tile-grass"],cave:["tile-stone","tile-dirt"],sky:["tile-snow","tile-grass"]};
+function gridToScreen(col,row){return{x:(col-row)*(TILE_W/2)+1600,y:(col+row)*(TILE_H/2)+200}}
+function screenToGrid(sx,sy){var x=sx-1600,y=sy-200;return{col:Math.floor((x/(TILE_W/2)+y/(TILE_H/2))/2),row:Math.floor((y/(TILE_H/2)-x/(TILE_W/2))/2)}}
+var state={coins:0,xp:0,score:0,answered:0,playerCol:20,playerRow:15,equipped:{hat:"hat_0",body:"body_0",pants:"pants_0",shoes:"shoes_0",weapon:"weapon_0",cape:"cape_0"},owned:["hat_0","body_0","pants_0","shoes_0","weapon_0","cape_0"],npcs:[],currentNpc:null,currentQuestion:null,answeredNpcs:new Set()};
+var allQuestions=[];
+function pick(arr){return arr[Math.floor(Math.random()*arr.length)]}
+function shuffle(arr){var a=arr.slice();for(var i=a.length-1;i>0;i--){var j=Math.floor(Math.random()*(i+1));var t=a[i];a[i]=a[j];a[j]=t}return a}
+function generateQuestions(){
+var Q=[];
+var templates=[
+{q:"She ___ to school every day.",ans:"goes",opts:["go","goes","going","went"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"They ___ football after school.",ans:"play",opts:["play","plays","played","playing"],exp:"&#x8907;&#x6578;&#x4E3B;&#x8A5E;&#x7528;&#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"He ___ his homework every evening.",ans:"does",opts:["do","does","doing","did"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"We ___ lunch at 12 o'clock.",ans:"have",opts:["has","have","having","had"],exp:"&#x8907;&#x6578;&#x4E3B;&#x8A5E;&#x7528;&#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"She ___ English very well.",ans:"speaks",opts:["speak","speaks","speaking","spoke"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"He ___ TV after dinner.",ans:"watches",opts:["watch","watches","watching","watched"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; es&#x3002;"},
+{q:"I ___ books in my free time.",ans:"read",opts:["reads","read","reading","readed"],exp:"I &#x7528;&#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"She ___ her room every Saturday.",ans:"cleans",opts:["clean","cleans","cleaning","cleaned"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"He ___ his dog in the park.",ans:"walks",opts:["walk","walks","walking","walked"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"She ___ piano every afternoon.",ans:"practices",opts:["practice","practices","practicing","practiced"],exp:"&#x7B2C;&#x4E09;&#x4EBA;&#x7A31;&#x55AE;&#x6578;&#x4E3B;&#x8A5E;&#xFF0C;&#x52D5;&#x8A5E;&#x52A0; s&#x3002;"},
+{q:"She ___ to the park yesterday.",ans:"went",opts:["goes","go","going","went"],exp:"'Yesterday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; went&#x3002;"},
+{q:"They ___ football last Sunday.",ans:"played",opts:["play","plays","playing","played"],exp:"'Last Sunday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; played&#x3002;"},
+{q:"He ___ his homework last night.",ans:"did",opts:["do","does","doing","did"],exp:"'Last night' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; did&#x3002;"},
+{q:"We ___ lunch at school yesterday.",ans:"had",opts:["has","have","having","had"],exp:"'Yesterday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; had&#x3002;"},
+{q:"She ___ a beautiful song yesterday.",ans:"sang",opts:["sings","sing","singing","sang"],exp:"'Yesterday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; sang&#x3002;"},
+{q:"He ___ a book last week.",ans:"read",opts:["reads","read","reading","readed"],exp:"'Last week' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; read&#x3002;"},
+{q:"She ___ a cake for my birthday.",ans:"made",opts:["makes","make","making","made"],exp:"&#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; made&#x3002;"},
+{q:"He ___ his friend last Monday.",ans:"met",opts:["meets","meet","meeting","met"],exp:"'Last Monday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; met&#x3002;"},
+{q:"She ___ a letter to her friend.",ans:"wrote",opts:["writes","write","writing","wrote"],exp:"&#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; wrote&#x3002;"},
+{q:"He ___ the bus to school yesterday.",ans:"took",opts:["takes","take","taking","took"],exp:"'Yesterday' &#x8868;&#x793A;&#x904E;&#x53BB;&#xFF0C;&#x7528;&#x904E;&#x53BB;&#x5F0F; took&#x3002;"},
+{q:"She ___ to music now.",ans:"is listening",opts:["listens","listened","is listening","listening"],exp:"'Now' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; is + V-ing&#x3002;"},
+{q:"They ___ football at the moment.",ans:"are playing",opts:["play","played","are playing","playing"],exp:"'At the moment' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; are + V-ing&#x3002;"},
+{q:"He ___ his homework right now.",ans:"is doing",opts:["does","did","is doing","doing"],exp:"'Right now' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; is + V-ing&#x3002;"},
+{q:"She ___ a book at the moment.",ans:"is reading",opts:["reads","read","is reading","reading"],exp:"'At the moment' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; is + V-ing&#x3002;"},
+{q:"He ___ TV right now.",ans:"is watching",opts:["watches","watched","is watching","watching"],exp:"'Right now' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; is + V-ing&#x3002;"},
+{q:"They ___ in the pool now.",ans:"are swimming",opts:["swim","swam","are swimming","swimming"],exp:"'Now' &#x8868;&#x793A;&#x6B63;&#x5728;&#x9032;&#x884C;&#xFF0C;&#x7528; are + V-ing&#x3002;"},
+{q:"She ___ already ___ her homework.",ans:"has done",opts:["has done","did","does","have done"],exp:"'Already' &#x8868;&#x793A;&#x5DF2;&#x7D93;&#x5B8C;&#x6210;&#xFF0C;&#x7528; has + &#x904E;&#x53BB;&#x5206;&#x8A5E;&#x3002;"},
+{q:"They ___ just ___ lunch.",ans:"have eaten",opts:["have eaten","ate","eat","has eaten"],exp:"'Just' &#x8868;&#x793A;&#x525B;&#x525B;&#x5B8C;&#x6210;&#xFF0C;&#x7528; have + &#x904E;&#x53BB;&#x5206;&#x8A5E;&#x3002;"},
+{q:"He ___ never ___ to Japan.",ans:"has been",opts:["has been","was","is","have been"],exp:"'Never' &#x8868;&#x793A;&#x7D93;&#x9A57;&#xFF0C;&#x7528; has + &#x904E;&#x53BB;&#x5206;&#x8A5E;&#x3002;"},
+{q:"We ___ already ___ the film.",ans:"have seen",opts:["have seen","saw","see","has seen"],exp:"'Already' &#x8868;&#x793A;&#x5DF2;&#x7D93;&#x5B8C;&#x6210;&#xFF0C;&#x7528; have + &#x904E;&#x53BB;&#x5206;&#x8A5E;&#x3002;"},
+{q:"She ___ to the park tomorrow.",ans:"will go",opts:["goes","went","will go","going"],exp:"'Tomorrow' &#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"They ___ football next Sunday.",ans:"will play",opts:["play","played","will play","playing"],exp:"'Next Sunday' &#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"He ___ his homework tonight.",ans:"will do",opts:["does","did","will do","doing"],exp:"'Tonight' &#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"We ___ lunch at a restaurant tomorrow.",ans:"will have",opts:["have","had","will have","having"],exp:"'Tomorrow' &#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"She ___ a song at the concert.",ans:"will sing",opts:["sings","sang","will sing","singing"],exp:"&#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"He ___ a new car next year.",ans:"will buy",opts:["buys","bought","will buy","buying"],exp:"'Next year' &#x8868;&#x793A;&#x672A;&#x4F86;&#xFF0C;&#x7528; will + &#x539F;&#x5F62;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"My birthday is ___ March.",ans:"in",opts:["in","on","at","to"],exp:"&#x6708;&#x4EFD;&#x524D;&#x7528;&#x4ECB;&#x8A5E; in&#x3002;"},
+{q:"The party is ___ Saturday.",ans:"on",opts:["in","on","at","to"],exp:"&#x661F;&#x671F;&#x524D;&#x7528;&#x4ECB;&#x8A5E; on&#x3002;"},
+{q:"I go to school ___ 8 o'clock.",ans:"at",opts:["in","on","at","to"],exp:"&#x6642;&#x9593;&#x524D;&#x7528;&#x4ECB;&#x8A5E; at&#x3002;"},
+{q:"She was born ___ 2015.",ans:"in",opts:["in","on","at","to"],exp:"&#x5E74;&#x4EFD;&#x524D;&#x7528;&#x4ECB;&#x8A5E; in&#x3002;"},
+{q:"The book is ___ the table.",ans:"on",opts:["in","on","at","to"],exp:"&#x5728;&#x684C;&#x5B50;&#x4E0A;&#x9762;&#x7528;&#x4ECB;&#x8A5E; on&#x3002;"},
+{q:"He goes to school ___ bus.",ans:"by",opts:["by","on","in","with"],exp:"&#x4E58;&#x642D;&#x4EA4;&#x901A;&#x5DE5;&#x5177;&#x7528;&#x4ECB;&#x8A5E; by&#x3002;"},
+{q:"I go to work ___ foot.",ans:"on",opts:["on","by","in","with"],exp:"&#x6B65;&#x884C;&#x7528; on foot&#x3002;"},
+{q:"She is good ___ swimming.",ans:"at",opts:["at","in","on","for"],exp:"be good at &#x8868;&#x793A;&#x64C5;&#x9577;&#x3002;"},
+{q:"He is interested ___ music.",ans:"in",opts:["in","on","at","for"],exp:"be interested in &#x8868;&#x793A;&#x5C0D;...&#x6709;&#x8208;&#x8DA3;&#x3002;"},
+{q:"I am afraid ___ spiders.",ans:"of",opts:["of","about","for","with"],exp:"be afraid of &#x8868;&#x793A;&#x5BB3;&#x6015;&#x3002;"},
+{q:"She is proud ___ her son.",ans:"of",opts:["of","about","for","with"],exp:"be proud of &#x8868;&#x793A;&#x4EE5;...&#x70BA;&#x69AE;&#x3002;"},
+{q:"He is different ___ his brother.",ans:"from",opts:["from","to","with","than"],exp:"be different from &#x8868;&#x793A;&#x8207;...&#x4E0D;&#x540C;&#x3002;"},
+{q:"She is waiting ___ the bus.",ans:"for",opts:["for","at","on","in"],exp:"wait for &#x8868;&#x793A;&#x7B49;&#x5F85;&#x3002;"},
+{q:"He is looking ___ his keys.",ans:"for",opts:["for","at","after","into"],exp:"look for &#x8868;&#x793A;&#x5C0B;&#x627E;&#x3002;"},
+{q:"The bank is ___ the park.",ans:"near",opts:["near","next","beside","close"],exp:"near &#x8868;&#x793A;&#x5728;...&#x9644;&#x8FD1;&#x3002;"},
+{q:"The plane flew ___ the clouds.",ans:"above",opts:["above","over","on","through"],exp:"above &#x8868;&#x793A;&#x5728;...&#x4E0A;&#x65B9;&#x3002;"},
+{q:"The cat ran ___ the road.",ans:"across",opts:["across","through","over","along"],exp:"across &#x8868;&#x793A;&#x6A2A;&#x904E;&#x3002;"},
+{q:"She arrived ___ the airport.",ans:"at",opts:["in","on","at","to"],exp:"arrive at &#x8868;&#x793A;&#x5230;&#x9054;&#x67D0;&#x5730;&#x9EDE;&#x3002;"},
+{q:"I saw ___ elephant at the zoo.",ans:"an",opts:["a","an","the",""],exp:"elephant &#x6BCD;&#x97F3;&#x958B;&#x982D;&#xFF0C;&#x7528; an&#x3002;"},
+{q:"She is ___ teacher.",ans:"a",opts:["a","an","the",""],exp:"teacher &#x5B50;&#x97F3;&#x958B;&#x982D;&#xFF0C;&#x7528; a&#x3002;"},
+{q:"He is ___ honest man.",ans:"an",opts:["a","an","the",""],exp:"honest &#x6BCD;&#x97F3;&#x958B;&#x982D;&#xFF08;h &#x4E0D;&#x767C;&#x97F3;&#xFF09;&#xFF0C;&#x7528; an&#x3002;"},
+{q:"She is ___ best student in the class.",ans:"the",opts:["a","an","the",""],exp:"&#x6700;&#x9AD8;&#x7D1A;&#x524D;&#x7528; the&#x3002;"},
+{q:"___ sun is very hot today.",ans:"The",opts:["A","An","The",""],exp:"&#x592A;&#x967D;&#x662F;&#x7368;&#x4E00;&#x7121;&#x4E8C;&#x7684;&#x4E8B;&#x7269;&#xFF0C;&#x7528; the&#x3002;"},
+{q:"I need ___ umbrella. It's raining.",ans:"an",opts:["a","an","the",""],exp:"umbrella &#x6BCD;&#x97F3;&#x958B;&#x982D;&#xFF0C;&#x7528; an&#x3002;"},
+{q:"He is ___ university student.",ans:"a",opts:["a","an","the",""],exp:"university &#x5B50;&#x97F3;&#x958B;&#x982D;&#xFF08;u &#x767C; /ju&#x2D0;/&#xFF09;&#xFF0C;&#x7528; a&#x3002;"},
+{q:"Tom is ___ than his brother.",ans:"taller",opts:["tall","taller","tallest","more tall"],exp:"&#x5169;&#x500B;&#x4EBA;&#x6BD4;&#x8F03;&#x7528;&#x6BD4;&#x8F03;&#x7D1A; taller&#x3002;"},
+{q:"Mary is ___ than her sister.",ans:"shorter",opts:["short","shorter","shortest","more short"],exp:"&#x5169;&#x500B;&#x4EBA;&#x6BD4;&#x8F03;&#x7528;&#x6BD4;&#x8F03;&#x7D1A; shorter&#x3002;"},
+{q:"The elephant is ___ than the mouse.",ans:"bigger",opts:["big","bigger","biggest","more big"],exp:"&#x5169;&#x500B;&#x4EBA;&#x6BD4;&#x8F03;&#x7528;&#x6BD4;&#x8F03;&#x7D1A; bigger&#x3002;"},
+{q:"He is the ___ in the class.",ans:"tallest",opts:["tall","taller","tallest","most tall"],exp:"&#x4E09;&#x500B;&#x6216;&#x4EE5;&#x4E0A;&#x6BD4;&#x8F03;&#x7528;&#x6700;&#x9AD8;&#x7D1A; tallest&#x3002;"},
+{q:"She is the ___ girl in her family.",ans:"youngest",opts:["young","younger","youngest","most young"],exp:"&#x4E09;&#x500B;&#x6216;&#x4EE5;&#x4E0A;&#x6BD4;&#x8F03;&#x7528;&#x6700;&#x9AD8;&#x7D1A; youngest&#x3002;"},
+{q:"This is the ___ film I have ever seen.",ans:"best",opts:["good","better","best","well"],exp:"&#x4E09;&#x500B;&#x6216;&#x4EE5;&#x4E0A;&#x6BD4;&#x8F03;&#x7528;&#x6700;&#x9AD8;&#x7D1A; best&#x3002;"},
+{q:"___ is my best friend.",ans:"He",opts:["He","Him","His","Himself"],exp:"&#x7576;&#x4E3B;&#x8A5E;&#x7528;&#x4E3B;&#x683C; He&#x3002;"},
+{q:"I gave ___ a present.",ans:"her",opts:["she","her","hers","herself"],exp:"&#x7576;&#x53D7;&#x8A5E;&#x7528;&#x53D7;&#x683C; her&#x3002;"},
+{q:"This is ___ book.",ans:"my",opts:["I","me","my","mine"],exp:"&#x4FEE;&#x98FE;&#x540D;&#x8A5E;&#x7528;&#x6240;&#x6709;&#x683C; my&#x3002;"},
+{q:"The book is ___.",ans:"mine",opts:["my","mine","me","I"],exp:"&#x7368;&#x7ACB;&#x4F7F;&#x7528;&#x7528;&#x6240;&#x6709;&#x683C;&#x4EE3;&#x540D;&#x8A5E; mine&#x3002;"},
+{q:"She did it ___.",ans:"herself",opts:["her","hers","herself","she"],exp:"&#x53CD;&#x8EAB;&#x4EE3;&#x8A5E; herself &#x8868;&#x793A;&#x300C;&#x5979;&#x81EA;&#x5DF1;&#x300D;&#x3002;"},
+{q:"___ are good students.",ans:"We",opts:["We","Us","Our","Ours"],exp:"&#x7576;&#x4E3B;&#x8A5E;&#x7528;&#x4E3B;&#x683C; We&#x3002;"},
+{q:"The teacher praised ___.",ans:"them",opts:["they","them","their","theirs"],exp:"&#x7576;&#x53D7;&#x8A5E;&#x7528;&#x53D7;&#x683C; them&#x3002;"},
+{q:"___ umbrella is this?",ans:"Whose",opts:["Who","Whom","Whose","Which"],exp:"&#x554F;&#x300C;&#x8AB0;&#x7684;&#x7528;&#x300D;Whose&#x3002;"},
+{q:"Between you and ___, this is a secret.",ans:"me",opts:["I","me","my","mine"],exp:"&#x4ECB;&#x8A5E;&#x5F8C;&#x9762;&#x7528;&#x53D7;&#x683C; me&#x3002;"},
+{q:"I like apples ___ oranges.",ans:"and",opts:["and","but","or","so"],exp:"&#x9023;&#x63A5;&#x5169;&#x500B;&#x559C;&#x6B61;&#x7684;&#x6771;&#x897F;&#x7528; and&#x3002;"},
+{q:"He is poor ___ happy.",ans:"but",opts:["and","but","or","so"],exp:"&#x8868;&#x793A;&#x8F49;&#x6298;&#x7528; but&#x3002;"},
+{q:"Do you want tea ___ coffee?",ans:"or",opts:["and","but","or","so"],exp:"&#x8868;&#x793A;&#x9078;&#x64C7;&#x7528; or&#x3002;"},
+{q:"It was raining, ___ we stayed home.",ans:"so",opts:["and","but","or","so"],exp:"&#x8868;&#x793A;&#x7D50;&#x679C;&#x7528; so&#x3002;"},
+{q:"___ it was cold, he went out.",ans:"Although",opts:["Although","Because","So","And"],exp:"&#x8868;&#x793A;&#x8B93;&#x6B65;&#x7528; Although&#x3002;"},
+{q:"She went to the shop ___ she needed milk.",ans:"because",opts:["because","but","so","although"],exp:"&#x8868;&#x793A;&#x539F;&#x56E0;&#x7528; because&#x3002;"},
+{q:"I will call you ___ I arrive.",ans:"when",opts:["when","but","or","so"],exp:"&#x8868;&#x793A;&#x6642;&#x9593;&#x7528; when&#x3002;"},
+{q:"___ you study hard, you will pass.",ans:"If",opts:["If","When","But","So"],exp:"&#x8868;&#x793A;&#x689D;&#x4EF6;&#x7528; If&#x3002;"},
+{q:"You ___ wear a helmet when riding a bike.",ans:"must",opts:["can","must","might","would"],exp:"&#x8868;&#x793A;&#x5FC5;&#x9808;&#x3001;&#x7FA9;&#x52D9;&#x7528; must&#x3002;"},
+{q:"She ___ swim when she was five.",ans:"could",opts:["can","could","must","should"],exp:"&#x8868;&#x793A;&#x904E;&#x53BB;&#x7684;&#x80FD;&#x529B;&#x7528; could&#x3002;"},
+{q:"___ I borrow your pen?",ans:"Can",opts:["Can","Must","Should","Will"],exp:"&#x8ACB;&#x6C42;&#x8A31;&#x53EF;&#x7528; Can&#x3002;"},
+{q:"You ___ see a doctor. You look sick.",ans:"should",opts:["can","must","should","would"],exp:"&#x8868;&#x793A;&#x5EFA;&#x8B70;&#x7528; should&#x3002;"},
+{q:"It ___ rain later. Take an umbrella.",ans:"might",opts:["can","must","might","will"],exp:"&#x8868;&#x793A;&#x53EF;&#x80FD;&#x6027;&#x7528; might&#x3002;"},
+{q:"You ___ eat so much sugar. It's bad for you.",ans:"shouldn't",opts:["shouldn't","couldn't","wouldn't","mustn't"],exp:"&#x8868;&#x793A;&#x4E0D;&#x61C9;&#x8A72;&#x7528; shouldn't&#x3002;"},
+{q:"The letter ___ by my mother yesterday.",ans:"was written",opts:["writes","wrote","was written","written"],exp:"&#x88AB;&#x52D5;&#x8A16;&#x904E;&#x53BB;&#x5F0F;&#xFF1A;was + &#x904E;&#x53BB;&#x5206;&#x8A5E; written&#x3002;"},
+{q:"The bridge ___ in 1998.",ans:"was built",opts:["builds","built","was built","is built"],exp:"&#x88AB;&#x52D5;&#x8A16;&#x904E;&#x53BB;&#x5F0F;&#xFF1A;was + &#x904E;&#x53BB;&#x5206;&#x8A5E; built&#x3002;"},
+{q:"English ___ all over the world.",ans:"is spoken",opts:["speaks","spoke","is spoken","spoken"],exp:"&#x88AB;&#x52D5;&#x8A16;&#x73FE;&#x5728;&#x5F0F;&#xFF1A;is + &#x904E;&#x53BB;&#x5206;&#x8A5E; spoken&#x3002;"},
+{q:"The homework ___ by the students every day.",ans:"is done",opts:["does","did","is done","done"],exp:"&#x88AB;&#x52D5;&#x8A16;&#x73FE;&#x5728;&#x5F0F;&#xFF1A;is + &#x904E;&#x53BB;&#x5206;&#x8A5E; done&#x3002;"},
+{q:"The cake ___ by the children yesterday.",ans:"was eaten",opts:["eats","ate","was eaten","eaten"],exp:"&#x88AB;&#x52D5;&#x8A16;&#x904E;&#x53BB;&#x5F0F;&#xFF1A;was + &#x904E;&#x53BB;&#x5206;&#x8A5E; eaten&#x3002;"},
+{q:"If it ___ tomorrow, we will stay home.",ans:"rains",opts:["rain","rains","rained","will rain"],exp:"If &#x5B50;&#x53E5;&#x7528;&#x7C21;&#x55AE;&#x73FE;&#x5728;&#x5F0F;&#x8868;&#x793A;&#x672A;&#x4F86;&#x3002;"},
+{q:"If I ___ a bird, I would fly to Japan.",ans:"were",opts:["am","was","were","be"],exp:"&#x8207;&#x73FE;&#x5728;&#x4E8B;&#x5BE6;&#x76F8;&#x53CD;&#xFF0C;if &#x5B50;&#x53E5;&#x7528; were&#x3002;"},
+{q:"If she ___ harder, she would have passed.",ans:"had studied",opts:["studies","studied","had studied","has studied"],exp:"&#x8207;&#x904E;&#x53BB;&#x4E8B;&#x5BE6;&#x76F8;&#x53CD;&#xFF0C;if &#x5B50;&#x53E5;&#x7528;&#x904E;&#x53BB;&#x5B8C;&#x6210;&#x5F0F;&#x3002;"},
+{q:"If you heat water, it ___.",ans:"boils",opts:["boil","boils","boiled","will boil"],exp:"&#x79D1;&#x5B78;&#x4E8B;&#x5BE6;&#xFF0C;&#x5169;&#x53E5;&#x90FD;&#x7528;&#x7C21;&#x55AE;&#x73FE;&#x5728;&#x5F0F;&#x3002;"},
+{q:"She said that she ___ tired.",ans:"was",opts:["is","was","were","be"],exp:"&#x9593;&#x63A5;&#x5F15;&#x8FF0;&#xFF0C;&#x6642;&#x614B;&#x5F80;&#x56DE;&#x63A8;&#xFF0C;is &#x2192; was&#x3002;"},
+{q:"He told me that he ___ the film.",ans:"had seen",opts:["saw","had seen","has seen","sees"],exp:"&#x9593;&#x63A5;&#x5F15;&#x8FF0;&#xFF0C;&#x904E;&#x53BB;&#x5F0F;&#x5F80;&#x56DE;&#x63A8;&#x70BA;&#x904E;&#x53BB;&#x5B8C;&#x6210;&#x5F0F;&#x3002;"},
+{q:"They said they ___ come the next day.",ans:"would",opts:["will","would","can","could"],exp:"&#x9593;&#x63A5;&#x5F15;&#x8FF0;&#xFF0C;will &#x2192; would&#x3002;"},
+{q:"The boy ___ won the prize is my cousin.",ans:"who",opts:["which","who","whom","whose"],exp:"&#x4FEE;&#x98FE;&#x4EBA;&#xFF08;the boy&#xFF09;&#x7528; who&#x3002;"},
+{q:"The book ___ I bought is interesting.",ans:"which",opts:["which","who","whom","whose"],exp:"&#x4FEE;&#x98FE;&#x7269;&#xFF08;the book&#xFF09;&#x7528; which&#x3002;"},
+{q:"The woman ___ lives next door is a doctor.",ans:"who",opts:["which","who","whom","whose"],exp:"&#x4FEE;&#x98FE;&#x4EBA;&#x7528; who&#x3002;"},
+{q:"The girl ___ father is a teacher is my friend.",ans:"whose",opts:["which","who","whom","whose"],exp:"&#x8868;&#x793A;&#x6240;&#x6709;&#x683C;&#x7528; whose&#x3002;"},
+{q:"There are three ___ in the box.",ans:"mice",opts:["mouse","mouses","mice","mices"],exp:"Mouse &#x7684;&#x8907;&#x6578;&#x662F;&#x4E0D;&#x898F;&#x5247;&#x8B8A;&#x5316; mice&#x3002;"},
+{q:"The ___ are playing in the garden.",ans:"children",opts:["child","childs","children","childrens"],exp:"Child &#x7684;&#x8907;&#x6578;&#x662F; children&#x3002;"},
+{q:"I saw two ___ at the zoo.",ans:"deer",opts:["deers","deer","deeres","deeries"],exp:"Deer &#x7684;&#x55AE;&#x8907;&#x6578;&#x540C;&#x5F62;&#x3002;"},
+{q:"The ___ are eating grass.",ans:"sheep",opts:["sheeps","sheep","sheepes","sheeplings"],exp:"Sheep &#x7684;&#x55AE;&#x8907;&#x6578;&#x540C;&#x5F62;&#x3002;"},
+{q:"The ___ are running in the field.",ans:"geese",opts:["goose","gooses","geese","geeses"],exp:"Goose &#x7684;&#x8907;&#x6578;&#x662F; geese&#x3002;"},
+{q:"She has two ___.",ans:"teeth",opts:["tooths","teeth","tooth","teeths"],exp:"Tooth &#x7684;&#x8907;&#x6578;&#x662F; teeth&#x3002;"},
+{q:"The news ___ very interesting.",ans:"is",opts:["is","are","were","be"],exp:"News &#x4FC2;&#x4E0D;&#x53EF;&#x6578;&#x540D;&#x8A5E;&#xFF0C;&#x7528;&#x55AE;&#x6578;&#x52D5;&#x8A5E; is&#x3002;"},
+{q:"The police ___ looking for the thief.",ans:"are",opts:["is","are","was","has"],exp:"Police &#x4FC2;&#x96C6;&#x5408;&#x540D;&#x8A5E;&#xFF0C;&#x7528;&#x8907;&#x6578;&#x52D5;&#x8A5E; are&#x3002;"},
+{q:"Five dollars ___ enough.",ans:"is",opts:["is","are","were","have"],exp:"&#x91D1;&#x984D;&#x4F5C;&#x70BA;&#x4E00;&#x500B;&#x6579;&#x9AD4;&#xFF0C;&#x7528;&#x55AE;&#x6578;&#x52D5;&#x8A5E;&#x3002;"},
+{q:"Every student ___ a textbook.",ans:"has",opts:["have","has","having","had"],exp:"Every + &#x540D;&#x8A5E;&#x4FC2;&#x55AE;&#x6578;&#xFF0C;&#x7528; has&#x3002;"}
 ];
-
-// ============================================================
-// STATE
-// ============================================================
-
-let state = {
-  coins: 0,
-  xp: 0,
-  score: 0,
-  answered: 0,
-  playerCol: 20,
-  playerRow: 15,
-  equipped: {hat:'hat_0', body:'body_0', pants:'pants_0', shoes:'shoes_0', weapon:'weapon_0', cape:'cape_0'},
-  owned: ['hat_0','body_0','pants_0','shoes_0','weapon_0','cape_0'],
-  npcs: [],
-  currentNpc: null,
-  currentQuestion: null,
-  answeredNpcs: new Set(),
-};
-
-let allQuestions = [];
-
-// ============================================================
-// QUESTIONS
-// ============================================================
-
-function generateQuestions() {
-  const Q = [];
-  const pick = (arr) => arr[Math.floor(Math.random() * arr.length)];
-  const shuffle = (arr) => { const a = [...arr]; for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];} return a; };
-
-  // ===== CLEAN, WELL-FORMED QUESTION TEMPLATES =====
-  // Each template produces a complete, meaningful sentence
-
-  // --- TENSES: Simple Present ---
-  const tenses_present = [
-    {q:"She ___ to school every day.", ans:"goes", opts:["go","goes","going","went"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"They ___ football after school.", ans:"play", opts:["play","plays","played","playing"], exp:"複數主詞用原形動詞。"},
-    {q:"He ___ his homework every evening.", ans:"does", opts:["do","does","doing","did"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"We ___ lunch at 12 o'clock.", ans:"have", opts:["has","have","having","had"], exp:"複數主詞用原形動詞。"},
-    {q:"She ___ English very well.", ans:"speaks", opts:["speak","speaks","speaking","spoke"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"I ___ up at 7 every morning.", ans:"get", opts:["gets","get","getting","got"], exp:"I 用原形動詞。"},
-    {q:"He ___ TV after dinner.", ans:"watches", opts:["watch","watches","watching","watched"], exp:"第三人稱單數主詞，動詞加 es。"},
-    {q:"They ___ in the park on Sundays.", ans:"run", opts:["run","runs","running","ran"], exp:"複數主詞用原形動詞。"},
-    {q:"She ___ her teeth twice a day.", ans:"brushes", opts:["brush","brushes","brushing","brushed"], exp:"第三人稱單數主詞，動詞加 es。"},
-    {q:"We ___ dinner at 7 o'clock.", ans:"eat", opts:["eats","eat","eating","ate"], exp:"複數主詞用原形動詞。"},
-    {q:"He ___ to music every night.", ans:"listens", opts:["listen","listens","listening","listened"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"I ___ books in my free time.", ans:"read", opts:["reads","read","reading","readed"], exp:"I 用原形動詞。"},
-    {q:"She ___ her room every Saturday.", ans:"cleans", opts:["clean","cleans","cleaning","cleaned"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"They ___ basketball at school.", ans:"play", opts:["play","plays","played","playing"], exp:"複數主詞用原形動詞。"},
-    {q:"He ___ his dog in the park.", ans:"walks", opts:["walk","walks","walking","walked"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"We ___ to church on Sundays.", ans:"go", opts:["goes","go","going","went"], exp:"複數主詞用原形動詞。"},
-    {q:"She ___ piano every afternoon.", ans:"practices", opts:["practice","practices","practicing","practiced"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"I ___ water every day.", ans:"drink", opts:["drinks","drink","drinking","drank"], exp:"I 用原形動詞。"},
-    {q:"He ___ his grandparents every week.", ans:"visits", opts:["visit","visits","visiting","visited"], exp:"第三人稱單數主詞，動詞加 s。"},
-    {q:"They ___ Chinese at school.", ans:"study", opts:["studies","study","studying","studied"], exp:"複數主詞用原形動詞。"},
-  ];
-
-  // --- TENSES: Simple Past ---
-  const tenses_past = [
-    {q:"She ___ to the park yesterday.", ans:"went", opts:["goes","go","going","went"], exp:"'Yesterday' 表示過去，用過去式 went。"},
-    {q:"They ___ football last Sunday.", ans:"played", opts:["play","plays","playing","played"], exp:"'Last Sunday' 表示過去，用過去式 played。"},
-    {q:"He ___ his homework last night.", ans:"did", opts:["do","does","doing","did"], exp:"'Last night' 表示過去，用過去式 did。"},
-    {q:"We ___ lunch at school yesterday.", ans:"had", opts:["has","have","having","had"], exp:"'Yesterday' 表示過去，用過去式 had。"},
-    {q:"She ___ a beautiful song yesterday.", ans:"sang", opts:["sings","sing","singing","sang"], exp:"'Yesterday' 表示過去，用過去式 sang。"},
-    {q:"I ___ up early this morning.", ans:"got", opts:["gets","get","getting","got"], exp:"'This morning' 表示過去，用過去式 got。"},
-    {q:"He ___ a book last week.", ans:"read", opts:["reads","read","reading","readed"], exp:"'Last week' 表示過去，用過去式 read。"},
-    {q:"They ___ to the beach last summer.", ans:"went", opts:["goes","go","going","went"], exp:"'Last summer' 表示過去，用過去式 went。"},
-    {q:"She ___ a cake for my birthday.", ans:"made", opts:["makes","make","making","made"], exp:"表示過去，用過去式 made。"},
-    {q:"We ___ a film yesterday.", ans:"watched", opts:["watch","watches","watching","watched"], exp:"'Yesterday' 表示過去，用過去式 watched。"},
-    {q:"He ___ his friend last Monday.", ans:"met", opts:["meets","meet","meeting","met"], exp:"'Last Monday' 表示過去，用過去式 met。"},
-    {q:"They ___ dinner at a restaurant.", ans:"ate", opts:["eats","eat","eating","ate"], exp:"表示過去，用過去式 ate。"},
-    {q:"She ___ a letter to her friend.", ans:"wrote", opts:["writes","write","writing","wrote"], exp:"表示過去，用過去式 wrote。"},
-    {q:"I ___ a cold last week.", ans:"caught", opts:["catches","catch","catching","caught"], exp:"'Last week' 表示過去，用過去式 caught。"},
-    {q:"He ___ the bus to school yesterday.", ans:"took", opts:["takes","take","taking","took"], exp:"'Yesterday' 表示過去，用過去式 took。"},
-  ];
-
-  // --- TENSES: Present Continuous ---
-  const tenses_prescont = [
-    {q:"She ___ to music now.", ans:"is listening", opts:["listens","listened","is listening","listening"], exp:"'Now' 表示正在進行，用 is + V-ing。"},
-    {q:"They ___ football at the moment.", ans:"are playing", opts:["play","played","are playing","playing"], exp:"'At the moment' 表示正在進行，用 are + V-ing。"},
-    {q:"He ___ his homework right now.", ans:"is doing", opts:["does","did","is doing","doing"], exp:"'Right now' 表示正在進行，用 is + V-ing。"},
-    {q:"We ___ dinner now.", ans:"are having", opts:["have","had","are having","having"], exp:"'Now' 表示正在進行，用 are + V-ing。"},
-    {q:"She ___ a book at the moment.", ans:"is reading", opts:["reads","read","is reading","reading"], exp:"'At the moment' 表示正在進行，用 is + V-ing。"},
-    {q:"I ___ to you now.", ans:"am talking", opts:["talk","talked","am talking","talking"], exp:"'Now' 表示正在進行，用 am + V-ing。"},
-    {q:"He ___ TV right now.", ans:"is watching", opts:["watches","watched","is watching","watching"], exp:"'Right now' 表示正在進行，用 is + V-ing。"},
-    {q:"They ___ in the pool now.", ans:"are swimming", opts:["swim","swam","are swimming","swimming"], exp:"'Now' 表示正在進行，用 are + V-ing。"},
-  ];
-
-  // --- TENSES: Present Perfect ---
-  const tenses_presperf = [
-    {q:"She ___ already ___ her homework.", ans:"has done", opts:["has done","did","does","have done"], exp:"'Already' 表示已經完成，用 has + 過去分詞。"},
-    {q:"They ___ just ___ lunch.", ans:"have eaten", opts:["have eaten","ate","eat","has eaten"], exp:"'Just' 表示剛剛完成，用 have + 過去分詞。"},
-    {q:"He ___ never ___ to Japan.", ans:"has been", opts:["has been","was","is","have been"], exp:"'Never' 表示經驗，用 has + 過去分詞。"},
-    {q:"We ___ already ___ the film.", ans:"have seen", opts:["have seen","saw","see","has seen"], exp:"'Already' 表示已經完成，用 have + 過去分詞。"},
-    {q:"She ___ just ___ a cake.", ans:"has made", opts:["has made","made","makes","have made"], exp:"'Just' 表示剛剛完成，用 has + 過去分詞。"},
-    {q:"I ___ already ___ my breakfast.", ans:"have finished", opts:["have finished","finished","finish","has finished"], exp:"'Already' 表示已經完成，用 have + 過去分詞。"},
-    {q:"He ___ never ___ sushi before.", ans:"has tried", opts:["has tried","tried","tries","have tried"], exp:"'Never...before' 表示經驗，用 has + 過去分詞。"},
-    {q:"They ___ just ___ the station.", ans:"have left", opts:["have left","left","leave","has left"], exp:"'Just' 表示剛剛完成，用 have + 過去分詞。"},
-  ];
-
-  // --- TENSES: Future (will) ---
-  const tenses_future = [
-    {q:"She ___ to the park tomorrow.", ans:"will go", opts:["goes","went","will go","going"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
-    {q:"They ___ football next Sunday.", ans:"will play", opts:["play","played","will play","playing"], exp:"'Next Sunday' 表示未來，用 will + 原形動詞。"},
-    {q:"He ___ his homework tonight.", ans:"will do", opts:["does","did","will do","doing"], exp:"'Tonight' 表示未來，用 will + 原形動詞。"},
-    {q:"We ___ lunch at a restaurant tomorrow.", ans:"will have", opts:["have","had","will have","having"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
-    {q:"She ___ a song at the concert.", ans:"will sing", opts:["sings","sang","will sing","singing"], exp:"表示未來，用 will + 原形動詞。"},
-    {q:"I ___ you tomorrow.", ans:"will call", opts:["call","called","will call","calling"], exp:"'Tomorrow' 表示未來，用 will + 原形動詞。"},
-    {q:"He ___ a new car next year.", ans:"will buy", opts:["buys","bought","will buy","buying"], exp:"'Next year' 表示未來，用 will + 原形動詞。"},
-    {q:"They ___ to London next month.", ans:"will travel", opts:["travel","traveled","will travel","traveling"], exp:"'Next month' 表示未來，用 will + 原形動詞。"},
-  ];
-
-  // --- TENSES: be going to ---
-  const tenses_goingto = [
-    {q:"She is ___ to visit her grandma.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
-    {q:"They are ___ to play football.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
-    {q:"He is ___ to study hard.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
-    {q:"We are ___ to have a party.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
-    {q:"I am ___ to read a book.", ans:"going", opts:["goes","go","going","went"], exp:"be going to 表示計劃，後面用 going。"},
-  ];
-
-  // --- TENSES: Past Continuous ---
-  const tenses_pastcont = [
-    {q:"She ___ a book when I called her.", ans:"was reading", opts:["read","was reading","reads","reading"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
-    {q:"They ___ football when it started to rain.", ans:"were playing", opts:["played","were playing","play","playing"], exp:"過去進行式：were + V-ing，表示過去某個時間正在進行。"},
-    {q:"He ___ his homework at 8 last night.", ans:"was doing", opts:["did","was doing","does","doing"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
-    {q:"We ___ dinner when the phone rang.", ans:"were having", opts:["had","were having","have","having"], exp:"過去進行式：were + V-ing，表示過去某個時間正在進行。"},
-    {q:"I ___ to music when you arrived.", ans:"was listening", opts:["listened","was listening","listen","listening"], exp:"過去進行式：was + V-ing，表示過去某個時間正在進行。"},
-  ];
-
-  // --- TENSES: Present Perfect Continuous ---
-  const tenses_presperfcont = [
-    {q:"She ___ English for five years.", ans:"has been studying", opts:["studies","has been studying","studied","studying"], exp:"現在完成進行式：has + been + V-ing，表示由過去持續到現在。"},
-    {q:"They ___ for two hours.", ans:"have been waiting", opts:["waited","have been waiting","wait","waiting"], exp:"現在完成進行式：have + been + V-ing，表示由過去持續到現在。"},
-    {q:"He ___ since 9 o'clock.", ans:"has been working", opts:["worked","has been working","works","working"], exp:"現在完成進行式：has + been + V-ing，表示由過去持續到現在。"},
-    {q:"We ___ all day.", ans:"have been playing", opts:["played","have been playing","play","playing"], exp:"現在完成進行式：have + been + V-ing，表示由過去持續到現在。"},
-  ];
-
-  // --- TENSES: Past Perfect ---
-  const tenses_pastperf = [
-    {q:"She ___ already ___ when I arrived.", ans:"had left", opts:["left","had leaves","had left","leaves"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
-    {q:"They ___ dinner before we came.", ans:"had finished", opts:["finished","had finishes","had finished","finish"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
-    {q:"He ___ his homework before he went out.", ans:"had done", opts:["did","had does","had done","does"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
-    {q:"We ___ the film before they told us.", ans:"had seen", opts:["saw","had sees","had seen","see"], exp:"過去的過去用過去完成式 had + 過去分詞。"},
-  ];
-
-  // --- PREPOSITIONS: in/on/at ---
-  const prepositions = [
-    {q:"My birthday is ___ March.", ans:"in", opts:["in","on","at","to"], exp:"月份前用介詞 in。"},
-    {q:"The party is ___ Saturday.", ans:"on", opts:["in","on","at","to"], exp:"星期前用介詞 on。"},
-    {q:"I go to school ___ 8 o'clock.", ans:"at", opts:["in","on","at","to"], exp:"時間前用介詞 at。"},
-    {q:"She was born ___ 2015.", ans:"in", opts:["in","on","at","to"], exp:"年份前用介詞 in。"},
-    {q:"We have lunch ___ noon.", ans:"at", opts:["in","on","at","to"], exp:"noon 前用介詞 at。"},
-    {q,"The book is ___ the table.", ans:"on", opts:["in","on","at","to"], exp:"在桌子上面用介詞 on。"},
-    {q:"The picture is ___ the wall.", ans:"on", opts:["in","on","at","to"], exp:"在牆上面用介詞 on。"},
-    {q:"She is sitting ___ the chair.", ans:"on", opts:["in","on","at","to"], exp:"在椅子上面用介詞 on。"},
-    {q:"He goes to school ___ bus.", ans:"by", opts:["by","on","in","with"], exp:"乘搭交通工具用介詞 by。"},
-    {q:"I go to work ___ foot.", ans:"on", opts:["on","by","in","with"], exp:"步行用 on foot。"},
-    {q:"She is good ___ swimming.", ans:"at", opts:["at","in","on","for"], exp:"be good at 表示擅長。"},
-    {q:"He is interested ___ music.", ans:"in", opts:["in","on","at","for"], exp:"be interested in 表示對...有興趣。"},
-    {q:"I am afraid ___ spiders.", ans:"of", opts:["of","about","for","with"], exp:"be afraid of 表示害怕。"},
-    {q,"She is proud ___ her son.", ans:"of", opts:["of","about","for","with"], exp:"be proud of 表示以...為榮。"},
-    {q:"He is different ___ his brother.", ans:"from", opts:["from","to","with","than"], exp:"be different from 表示與...不同。"},
-    {q:"I agree ___ you.", ans:"with", opts:["with","to","on","about"], exp:"agree with 表示同意某人。"},
-    {q:"She is waiting ___ the bus.", ans:"for", opts:["for","at","on","in"], exp:"wait for 表示等待。"},
-    {q:"He is looking ___ his keys.", ans:"for", opts:["for","at","after","into"], exp:"look for 表示尋找。"},
-    {q:"The bank is ___ the park.", ans:"near", opts:["near","next","beside","close"], exp:"near 表示在...附近。"},
-    {q:"The shop is ___ the cinema and the bank.", ans:"between", opts:["between","among","beside","next"], exp:"between 表示在兩者之間。"},
-    {q:"The plane flew ___ the clouds.", ans:"above", opts:["above","over","on","through"], exp:"above 表示在...上方。"},
-    {q:"The cat ran ___ the road.", ans:"across", opts:["across","through","over","along"], exp:"across 表示橫過。"},
-    {q:"I was born ___ Hong Kong.", ans:"in", opts:["in","on","at","to"], exp:"城市前用介詞 in。"},
-    {q:"She arrived ___ the airport.", ans:"at", opts:["in","on","at","to"], exp:"arrive at 表示到達某地點。"},
-    {q:"We will go ___ holiday next week.", ans:"on", opts:["in","on","at","to"], exp:"on holiday 表示度假。"},
-    {q:"He is sitting ___ the sofa.", ans:"on", opts:["in","on","at","to"], exp:"在沙發上用介詞 on。"},
-    {q:"The keys are ___ the drawer.", ans:"in", opts:["in","on","at","to"], exp:"在抽屜裡用介詞 in。"},
-    {q:"She put the letter ___ the envelope.", ans:"in", opts:["in","on","at","to"], exp:"在信封裡用介詞 in。"},
-    {q:"We met ___ Monday morning.", ans:"on", opts:["in","on","at","to"], exp:"特定的早上用介詞 on。"},
-    {q:"The train leaves ___ 9:30.", ans:"at", opts:["in","on","at","to"], exp:"時間前用介詞 at。"},
-  ];
-
-  // --- ARTICLES ---
-  const articles = [
-    {q:"I saw ___ elephant at the zoo.", ans:"an", opts:["a","an","the",""], exp:"elephant 母音開頭，用 an。"},
-    {q:"She is ___ teacher.", ans:"a", opts:["a","an","the",""], exp:"teacher 子音開頭，用 a。"},
-    {q:"He is ___ honest man.", ans:"an", opts:["a","an","the",""], exp:"honest 母音開頭（h 不發音），用 an。"},
-    {q:"I have ___ apple and ___ orange.", ans:"an", opts:["a","an","the",""], exp:"apple 母音開頭，用 an。"},
-    {q:"She is ___ best student in the class.", ans:"the", opts:["a","an","the",""], exp:"最高級前用 the。"},
-    {q:"___ sun is very hot today.", ans:"The", opts:["A","An","The",""], exp:"太陽是獨一無二的事物，用 the。"},
-    {q:"I need ___ umbrella. It's raining.", ans:"an", opts:["a","an","the",""], exp:"umbrella 母音開頭，用 an。"},
-    {q:"He is ___ university student.", ans:"a", opts:["a","an","the",""], exp:"university 子音開頭（u 發 /juː/），用 a。"},
-    {q:"She plays ___ piano very well.", ans:
-
-  // --- COMPARATIVES & SUPERLATIVES ---
-  const comparatives = [
-    {q:"Tom is ___ than his brother.", ans:"taller", opts:["tall","taller","tallest","more tall"], exp:"兩個人比較用比較級 taller。"},
-    {q:"Mary is ___ than her sister.", ans:"shorter", opts:["short","shorter","shortest","more short"], exp:"兩個人比較用比較級 shorter。"},
-    {q:"The elephant is ___ than the mouse.", ans:"bigger", opts:["big","bigger","biggest","more big"], exp:"兩個人比較用比較級 bigger。"},
-    {q:"This book is ___ than that one.", ans:"longer", opts:["long","longer","longest","more long"], exp:"兩個人比較用比較級 longer。"},
-    {q:"He is the ___ in the class.", ans:"tallest", opts:["tall","taller","tallest","most tall"], exp:"三個或以上比較用最高級 tallest。"},
-    {q:"She is the ___ girl in her family.", ans:"youngest", opts:["young","younger","youngest","most young"], exp:"三個或以上比較用最高級 youngest。"},
-    {q:"This is the ___ film I have ever seen.", ans:"best", opts:["good","better","best","well"], exp:"三個或以上比較用最高級 best。"},
-    {q:"He is the ___ student in the school.", ans:"smartest", opts:["smart","smarter","smartest","most smart"], exp:"三個或以上比較用最高級 smartest。"},
-    {q:"The blue whale is the ___ animal in the world.", ans:"largest", opts:["large","larger","largest","most large"], exp:"三個或以上比較用最高級 largest。"},
-    {q:"She runs ___ than her brother.", ans:"faster", opts:["fast","faster","fastest","more fast"], exp:"兩個人比較用比較級 faster。"},
-  ];
-
-  // --- PRONOUNS ---
-  const pronouns = [
-    {q:"___ is my best friend.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
-    {q:"I gave ___ a present.", ans:"her", opts:["she","her","hers","herself"], exp:"當受詞用受格 her。"},
-    {q:"This is ___ book.", ans:"my", opts:["I","me","my","mine"], exp:"修飾名詞用所有格 my。"},
-    {q:"The book is ___.", ans:"mine", opts:["my","mine","me","I"], exp:"獨立使用用所有格代名詞 mine。"},
-    {q:"She did it ___.", ans:"herself", opts:["her","hers","herself","she"], exp:"反身代詞 herself 表示「她自己」。"},
-    {q:"___ are good students.", ans:"We", opts:["We","Us","Our","Ours"], exp:"當主詞用主格 We。"},
-    {q:"The teacher praised ___.", ans:"them", opts:["they","them","their","theirs"], exp:"當受詞用受格 them。"},
-    {q:"___ umbrella is this?", ans:"Whose", opts:["Who","Whom","Whose","Which"], exp:"問「誰的用」Whose。"},
-    {q:"Between you and ___, this is a secret.", ans:"me", opts:["I","me","my","mine"], exp:"介詞後面用受格 me。"},
-    {q:"___ is the tallest boy in the class.", ans:"He", opts:["He","Him","His","Himself"], exp:"當主詞用主格 He。"},
-  ];
-
-  // --- CONJUNCTIONS ---
-  const conjunctions = [
-    {q:"I like apples ___ oranges.", ans:"and", opts:["and","but","or","so"], exp:"連接兩個喜歡的東西用 and。"},
-    {q:"He is poor ___ happy.", ans:"but", opts:["and","but","or","so"], exp:"表示轉折用 but。"},
-    {q:"Do you want tea ___ coffee?", ans:"or", opts:["and","but","or","so"], exp:"表示選擇用 or。"},
-    {q:"It was raining, ___ we stayed home.", ans:"so", opts:["and","but","or","so"], exp:"表示結果用 so。"},
-    {q:"She studied hard ___ she passed the exam.", ans:"and", opts:["and","but","or","because"], exp:"連接兩個相關事件用 and。"},
-    {q:"I was tired, ___ I went to bed early.", ans:"so", opts:["so","but","although","because"], exp:"表示因果用 so。"},
-    {q:"___ it was cold, he went out.", ans:"Although", opts:["Although","Because","So","And"], exp:"表示讓步用 Although。"},
-    {q:"She went to the shop ___ she needed milk.", ans:"because", opts:["because","but","so","although"], exp:"表示原因用 because。"},
-    {q:"I will call you ___ I arrive.", ans:"when", opts:["when","but","or","so"], exp:"表示時間用 when。"},
-    {q:"___ you study hard, you will pass.", ans:"If", opts:["If","When","But","So"], exp:"表示條件用 If。"},
-  ];
-
-  // --- MODAL VERBS ---
-  const modals = [
-    {q:"You ___ wear a helmet when riding a bike.", ans:"must", opts:["can","must","might","would"], exp:"表示必須、義務用 must。"},
-    {q:"She ___ swim when she was five.", ans:"could", opts:["can","could","must","should"], exp:"表示過去的能力用 could。"},
-    {q:"___ I borrow your pen?", ans:"Can", opts:["Can","Must","Should","Will"], exp:"請求許可用 Can。"},
-    {q:"You ___ see a doctor. You look sick.", ans:"should", opts:["can","must","should","would"], exp:"表示建議用 should。"},
-    {q:"It ___ rain later. Take an umbrella.", ans:"might", opts:["can","must","might","will"], exp:"表示可能性用 might。"},
-    {q:"Students ___ wear uniforms to school.", ans:"must", opts:["can","must","might","could"], exp:"表示規定/義務用 must。"},
-    {q:"___ you please help me?", ans:"Could", opts:["Can","Could","Should","Must"], exp:"禮貌請求用 Could。"},
-    {q:"You ___ eat so much sugar. It's bad for you.", ans:"shouldn't", opts:["shouldn't","couldn't","wouldn't","mustn't"], exp:"表示不應該用 shouldn't。"},
-    {q:"I ___ like a cup of tea, please.", ans:"would", opts:["can","could","would","should"], exp:"禮貌要求用 would like。"},
-    {q:"She ___ be at home. Her car is outside.", ans:"must", opts:["can","must","might","should"], exp:"表示推測（很確定）用 must。"},
-  ];
-
-  // --- PASSIVE VOICE ---
-  const passive = [
-    {q:"The letter ___ by my mother yesterday.", ans:"was written", opts:["writes","wrote","was written","written"], exp:"被動語態過去式：was + 過去分詞 written。"},
-    {q:"The bridge ___ in 1998.", ans:"was built", opts:["builds","built","was built","is built"], exp:"被動語態過去式：was + 過去分詞 built。"},
-    {q:"English ___ all over the world.", ans:"is spoken", opts:["speaks","spoke","is spoken","spoken"], exp:"被動語態現在式：is + 過去分詞 spoken。"},
-    {q:"The homework ___ by the students every day.", ans:"is done", opts:["does","did","is done","done"], exp:"被動語態現在式：is + 過去分詞 done。"},
-    {q:"The cake ___ by the children yesterday.", ans:"was eaten", opts:["eats","ate","was eaten","eaten"], exp:"被動語態過去式：was + 過去分詞 eaten。"},
-    {q:"The road ___ now.", ans:"is being repaired", opts:["repairs","repaired","is being repaired","repairing"], exp:"被動語態進行式：is being + 過去分詞。"},
-    {q:"The window ___ last night.", ans:"was broken", opts:["breaks","broke","was broken","broken"], exp:"被動語態過去式：was + 過去分詞 broken。"},
-    {q:"Rice ___ in many Asian countries.", ans:"is grown", opts:["grows","grew","is grown","grown"], exp:"被動語態現在式：is + 過去分詞 grown。"},
-  ];
-
-  // --- CONDITIONALS ---
-  const conditionals = [
-    {q:"If it ___ tomorrow, we will stay home.", ans:"rains", opts:["rain","rains","rained","will rain"], exp:"If 子句（第一類條件句）用簡單現在式表示未來。"},
-    {q:"If I ___ a bird, I would fly to Japan.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反（第二類條件句），if 子句用 were。"},
-    {q:"If she ___ harder, she would have passed.", ans:"had studied", opts:["studies","studied","had studied","has studied"], exp:"與過去事實相反（第三類條件句），if 子句用過去完成式。"},
-    {q:"If you heat water, it ___.", ans:"boils", opts:["boil","boils","boiled","will boil"], exp:"科學事實（零條件句），兩句都用簡單現在式。"},
-    {q:"If I ___ you, I would accept the offer.", ans:"were", opts:["am","was","were","be"], exp:"與現在事實相反，if 子句用 were（所有人稱）。"},
-    {q:"If they ___ earlier, they would have caught the train.", ans:"had left", opts:["left","had left","leave","have left"], exp:"與過去事實相反，if 子句用過去完成式 had left。"},
-    {q:"If it rains, I ___ take an umbrella.", ans:"will", opts:["will","would","can","could"], exp:"第一類條件句，主要子句用 will + 原形動詞。"},
-    {q:"If I had known, I ___ have told you.", ans:"would", opts:["will","would","could","should"], exp:"與過去事實相反，主要子句用 would have + 過去分詞。"},
-  ];
-
-  // --- REPORTED SPEECH ---
-  const reported = [
-    {q:"She said that she ___ tired.", ans:"was", opts:["is","was","were","be"], exp:"間接引述，時態往回推，is → was。"},
-    {q:"He told me that he ___ the film.", ans:"had seen", opts:["saw","had seen","has seen","sees"], exp:"間接引述，過去式往回推為過去完成式。"},
-    {q:"They said they ___ come the next day.", ans:"would", opts:["will","would","can","could"], exp:"間接引述，will → would。"},
-    {q:"She asked me where I ___.", ans:"lived", opts:["live","lived","living","lives"], exp:"間接引述，現在式往回推為過去式。"},
-    {q:"He said he ___ his homework already.", ans:"had finished", opts:["finished","had finished","has finished","finishes"], exp:"間接引述，現在完成式往回推為過去完成式。"},
-    {q:"She said she ___ to the party.", ans:"was going", opts:["is going","was going","goes","went"], exp:"間接引述，現在進行式往回推為過去進行式。"},
-  ];
-
-  // --- RELATIVE CLAUSES ---
-  const relative = [
-    {q:"The boy ___ won the prize is my cousin.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人（the boy）用 who。"},
-    {q:"The book ___ I bought is interesting.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物（the book）用 which。"},
-    {q:"The woman ___ lives next door is a doctor.", ans:"who", opts:["which","who","whom","whose"], exp:"修飾人用 who。"},
-    {q:"The car ___ he drives is very fast.", ans:"which", opts:["which","who","whom","whose"], exp:"修飾物用 which。"},
-    {q:"The girl ___ father is a teacher is my friend.", ans:"whose", opts:["which","who","whom","whose"], exp:"表示所有格用 whose。"},
-    {q:"The house ___ we bought last year is big.", ans:"which", opts:["which","who","where","when"], exp:"修飾物用 which。"},
-    {q:"The place ___ we met is a park.", ans:"where", opts:["which","who","where","when"], exp:"修飾地方用 where。"},
-    {q:"The day ___ I met her was sunny.", ans:"when", opts:["which","who","where","when"], exp:"修飾時間用 when。"},
-  ];
-
-  // --- INVERSION ---
-  const inversion = [
-    {q:"Never ___ such a beautiful sunset.", ans:"have I seen", opts:["I have seen","have I seen","I saw","did I saw"], exp:"Never 開頭要倒裝：Never + have + S + p.p."},
-    {q:"Not only ___ hard, but she is also kind.", ans:"does she work", opts:["she works","does she work","she work","working she"], exp:"Not only 開頭要倒裝。"},
-    {q:"Hardly ___ the door when the phone rang.", ans:"had I opened", opts:["I had opened","had I opened","I opened","did I open"], exp:"Hardly 開頭要倒裝，用過去完成式。"},
-    {q:"Only then ___ the truth.", ans:"did I understand", opts:["I understood","did I understand","I understand","understand I"], exp:"Only then 開頭要倒裝。"},
-    {q:"Seldom ___ such a good opportunity.", ans:"do we have", opts:["we have","do we have","we had","had we"], exp:"Seldom 開頭要倒裝。"},
-    {q:"No sooner ___ than it started to rain.", ans:"had we left", opts:["we had left","had we left","we left","did we leave"], exp:"No sooner 開頭要倒裝，用過去完成式。"},
-  ];
-
-  // --- PLURALS ---
-  const plurals = [
-    {q:"There are three ___ in the box.", ans:"mice", opts:["mouse","mouses","mice","mices"], exp:"Mouse 的複數是不規則變化 mice。"},
-    {q:"The ___ are playing in the garden.", ans:"children", opts:["child","childs","children","childrens"], exp:"Child 的複數是 children。"},
-    {q:"I saw two ___ at the zoo.", ans:"deer", opts:["deers","deer","deeres","deeries"], exp:"Deer 的單複數同形。"},
-    {q:"The ___ are eating grass.", ans:"sheep", opts:["sheeps","sheep","sheepes","sheeplings"], exp:"Sheep 的單複數同形。"},
-    {q:"There are many ___ in the pond.", ans:"fish", opts:["fishs","fish","fishes","fishies"], exp:"Fish 的複數通常係 fish。"},
-    {q:"The ___ are running in the field.", ans:"geese", opts:["goose","gooses","geese","geeses"], exp:"Goose 的複數是 geese。"},
-    {q:"I bought five ___ at the market.", ans:"tomatoes", opts:["tomato","tomatos","tomatoes","tomatose"], exp:"以 o 結尾的有生命名詞，複數加 es。"},
-    {q:"The ___ are very tall.", ans:"men", opts:["man","mans","men","mens"], exp:"Man 的複數是 men。"},
-    {q:"She has two ___.", ans:"teeth", opts:["tooths","teeth","tooth","teeths"], exp:"Tooth 的複數是 teeth。"},
-    {q:"The ___ are flying south.", ans:"birds", opts:["bird","birds","birdes","birdies"], exp:"Bird 的複數係 birds（規則變化）。"},
-  ];
-
-  // --- SUBJECT-VERB AGREEMENT ---
-  const subjverb = [
-    {q:"The news ___ very interesting.", ans:"is", opts:["is","are","were","be"], exp:"News 係不可數名詞，用單數動詞 is。"},
-    {q:"The police ___ looking for the thief.", ans:"are", opts:["is","are","was","has"], exp:"Police 係集合名詞，用複數動詞 are。"},
-    {q:"Five dollars ___ enough.", ans:"is", opts:["is","are","were","have"], exp:"金額作為一個整體，用單數動詞。"},
-    {q:"The team ___ playing well.", ans:"is", opts:["is","are","were","be"], exp:"Team 作為一個整體用單數動詞 is。"},
-    {q:"My family ___ very large.", ans:"is", opts:["is","are","were","have"], exp:"Family 作為一個整體用單數動詞。"},
-    {q:"The children ___ playing outside.", ans:"are", opts:["is","are","was","be"], exp:"Children 係複數，用 are。"},
-    {q:"Every student ___ a textbook.", ans:"has", opts:["have","has","having","had"], exp:"Every + 名詞係單數，用 has。"},
-    {q:"Neither Tom nor Mary ___ coming.", ans:"is", opts:["is","are","were","be"], exp:"Neither...nor 動詞同最近嘅主詞一致（Mary → is）。"},
-  ];
-
-  // ===== COMPILE ALL QUESTIONS =====
-  var allTemplates = [].concat(tenses_present, tenses_past, tenses_prescont, tenses_presperf, tenses_future, tenses_goingto, tenses_pastcont, tenses_presperfcont, tenses_pastperf, prepositions, articles, comparatives, pronouns, conjunctions, modals, passive, conditionals, reported, relative, inversion, plurals, subjverb);
-
-  // Pick a random question from the pool
-  var q = pick(allTemplates);
-  Q.push({level: q.level || 3, category: q.category || "Grammar", question: q.q, options: shuffle(q.opts), answer: q.opts.indexOf(q.ans), explanation: q.exp});
-
-  // Deduplicate
-  var seen = new Set();
-  var unique = [];
-  for(var i = 0; i < Q.length; i++) {
-    if(!seen.has(Q[i].question)) {
-      seen.add(Q[i].question);
-      unique.push(Q[i]);
-    }
-  }
-  return unique.sort(function() { return Math.random() - 0.5; });
+var q=pick(templates);
+Q.push({level:3,category:"Grammar",question:q.q,options:shuffle(q.opts),answer:q.opts.indexOf(q.ans),explanation:q.exp});
+var seen=new Set(),unique=[];
+for(var i=0;i<Q.length;i++){if(!seen.has(Q[i].question)){seen.add(Q[i].question);unique.push(Q[i])}}
+return unique.sort(function(){return Math.random()-0.5});
 }
-
-// ============================================================
-// MAP GENERATION
-// ============================================================
-
-// ============================================================
-// ISOMETRIC MAP SYSTEM
-// ============================================================
-
-// Isometric constants
-const TILE_W = 64;
-const TILE_H = 32;
-const MAP_COLS = 50;
-const MAP_ROWS = 50;
-
-// Convert grid coordinates to screen coordinates
-function gridToScreen(col, row) {
-  const x = (col - row) * (TILE_W / 2) + 1600; // offset to center
-  const y = (col + row) * (TILE_H / 2) + 200;
-  return { x, y };
+function getRegionAt(col,row){for(var i=0;i<REGIONS.length;i++){var r=REGIONS[i];if(col>=r.col&&col<r.col+r.w&&row>=r.row&&row<r.row+r.h)return r}return null}
+function buildMap(){
+var canvas=document.getElementById("mapCanvas");canvas.innerHTML="";
+for(var row=0;row<MAP_ROWS;row++){for(var col=0;col<MAP_COLS;col++){
+var pos=gridToScreen(col,row),tile=document.createElement("div");tile.className="tile iso-tile";
+var tt="tile-grass",reg=getRegionAt(col,row);
+if(reg){var types=TERRAIN[reg.type]||["tile-grass"];tt=types[(col+row)%types.length]}
+else{var n=(col*7+row*13)%10;if(n<2)tt="tile-grass2";else if(n<3)tt="tile-path"}
+tile.classList.add(tt);tile.style.left=pos.x+"px";tile.style.top=pos.y+"px";canvas.appendChild(tile);
+}}
+for(var i=0;i<30;i++){
+var tc=2+Math.floor(Math.random()*46),tr=2+Math.floor(Math.random()*46),tp=gridToScreen(tc,tr);
+var tree=document.createElement("div");tree.className="tree-3d";tree.style.left=(tp.x-16)+"px";tree.style.top=(tp.y-24)+"px";
+tree.textContent=["&#x1F332;","&#x1F333;","&#x1F334;","&#x1F384;","&#x1F335;"][Math.floor(Math.random()*5)];canvas.appendChild(tree);
 }
-
-// Convert screen coordinates to grid
-function screenToGrid(sx, sy) {
-  const x = sx - 1600;
-  const y = sy - 200;
-  const col = (x / (TILE_W / 2) + y / (TILE_H / 2)) / 2;
-  const row = (y / (TILE_H / 2) - x / (TILE_W / 2)) / 2;
-  return { col: Math.floor(col), row: Math.floor(row) };
+REGIONS.forEach(function(r){var p=gridToScreen(r.col,r.row),el=document.createElement("div");el.style.cssText="position:absolute;left:"+p.x+"px;top:"+p.y+"px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.5);pointer-events:none;white-space:nowrap";el.textContent=r.name;canvas.appendChild(el)});
+placeNpcs();
 }
-
-// Map terrain types per region
-const TERRAIN = {
-  forest: ['tile-grass','tile-grass2'],
-  grass: ['tile-grass','tile-grass2'],
-  water: ['tile-water'],
-  mountain: ['tile-stone','tile-stone'],
-  castle: ['tile-stone','tile-path'],
-  desert: ['tile-sand','tile-sand'],
-  swamp: ['tile-dirt','tile-grass'],
-  cave: ['tile-stone','tile-dirt'],
-  sky: ['tile-snow','tile-grass'],
-};
-
-function buildMap() {
-  const canvas = document.getElementById('mapCanvas');
-  canvas.innerHTML = '';
-
-  // Draw isometric ground tiles
-  for(let row = 0; row < MAP_ROWS; row++) {
-    for(let col = 0; col < MAP_COLS; col++) {
-      const pos = gridToScreen(col, row);
-      const tile = document.createElement('div');
-      tile.className = 'tile iso-tile';
-
-      // Determine terrain based on position
-      let terrainType = 'tile-grass';
-      const region = getRegionAt(col, row);
-      if(region) {
-        const types = TERRAIN[region.type] || ['tile-grass'];
-        terrainType = types[(col + row) % types.length];
-      } else {
-        // Add variety
-        const noise = (col * 7 + row * 13) % 10;
-        if(noise < 2) terrainType = 'tile-grass2';
-        else if(noise < 3) terrainType = 'tile-path';
-      }
-
-      tile.classList.add(terrainType);
-      tile.style.left = pos.x + 'px';
-      tile.style.top = pos.y + 'px';
-      tile.dataset.col = col;
-      tile.dataset.row = row;
-      canvas.appendChild(tile);
-    }
-  }
-
-  // Draw decorations
-  drawDecorations(canvas);
-
-  // Draw region labels
-  REGIONS.forEach(r => {
-    const pos = gridToScreen(r.col, r.row);
-    const el = document.createElement('div');
-    el.style.cssText = `position:absolute;left:${pos.x}px;top:${pos.y}px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.5);pointer-events:none;text-shadow:0 1px 4px #000;white-space:nowrap`;
-    el.textContent = r.name;
-    canvas.appendChild(el);
-  });
-
-  // Place NPCs
-  placeNpcs();
+function placeNpcs(){
+var positions=[];state.npcs=[];
+for(var i=0;i<15;i++){
+var col,row,ok,att=0;
+do{col=5+Math.floor(Math.random()*40);row=5+Math.floor(Math.random()*40);ok=true;
+for(var j=0;j<positions.length;j++){if(Math.abs(col-positions[j].col)<4&&Math.abs(row-positions[j].row)<4){ok=false;break}}
+if(Math.abs(col-25)<5&&Math.abs(row-20)<5)ok=false;att++;
+}while(!ok&&att<50);
+positions.push({col:col,row:row});
+var ti=i%NPC_TYPES.length,nt=NPC_TYPES[ti];
+var npc={id:i,col:col,row:row,type:nt,name:NPC_NAMES[nt]||"NPC",level:Math.ceil((i+1)/3),answered:false};
+state.npcs.push(npc);
+var pos=gridToScreen(col,row),el=document.createElement("div");el.className="npc";el.id="npc_"+i;
+el.style.cssText="left:"+(pos.x-24)+"px;top:"+(pos.y-32)+"px;background:"+getNpcBg(npc.level);
+el.innerHTML=npc.type+'<span class="npc-name">'+npc.name+' Lv.'+npc.level+'</span>';
+el.onclick=function(e){e.stopPropagation();interactNpc(+this.id.split("_")[1])};
+document.getElementById("mapCanvas").appendChild(el);
 }
-
-function getRegionAt(col, row) {
-  for(const r of REGIONS) {
-    if(col >= r.col && col < r.col + r.w && row >= r.row && row < r.row + r.h) {
-      return r;
-    }
-  }
-  return null;
+document.getElementById("totalNpcDisplay").textContent=15;
 }
-
-function drawDecorations(canvas) {
-  // Trees
-  const treePositions = [
-    {col:5,row:8},{col:8,row:5},{col:12,row:3},{col:3,row:12},{col:7,row:10},
-    {col:2,row:15},{col:15,row:2},{col:10,row:7},{col:6,row:14},{col:14,row:6},
-    {col:1,row:20},{col:20,row:1},{col:8,row:18},{col:18,row:8},{col:4,row:22},
-    {col:22,row:4},{col:11,row:15},{col:15,row:11},{col:3,row:25},{col:25,row:3},
-    {col:13,row:13},{col:7,row:20},{col:20,row:7},{col:9,row:22},{col:22,row:9},
-    {col:16,row:16},{col:2,row:28},{col:28,row:2},{col:12,row:20},{col:20,row:12},
-  ];
-  treePositions.forEach(p => {
-    const pos = gridToScreen(p.col, p.row);
-    const tree = document.createElement('div');
-    tree.className = 'tree-3d';
-    tree.style.left = (pos.x - 16) + 'px';
-    tree.style.top = (pos.y - 24) + 'px';
-    tree.textContent = ['🌲','🌳','🌴','🎄','🌵'][Math.floor(Math.random()*5)];
-    canvas.appendChild(tree);
-  });
-
-  // Buildings
-  const buildings = [
-    {col:25,row:20,icon:'🏰'},{col:22,row:18,icon:'🏯'},{col:28,row:22,icon:'⛪'},
-    {col:10,row:15,icon:'🏠'},{col:15,row:10,icon:'🏡'},{col:35,row:15,icon:'🏔️'},
-    {col:40,row:30,icon:'🏰'},{col:5,row:35,icon:'🌋'},{col:30,row:40,icon:'🏰'},
-  ];
-  buildings.forEach(b => {
-    const pos = gridToScreen(b.col, b.row);
-    const el = document.createElement('div');
-    el.className = 'building';
-    el.style.left = (pos.x - 18) + 'px';
-    el.style.top = (pos.y - 30) + 'px';
-    el.textContent = b.icon;
-    canvas.appendChild(el);
-  });
-
-  // Rocks
-  for(let i=0;i<20;i++) {
-    const col = 2 + Math.floor(Math.random() * 46);
-    const row = 2 + Math.floor(Math.random() * 46);
-    const pos = gridToScreen(col, row);
-    const rock = document.createElement('div');
-    rock.className = 'map-object';
-    rock.style.left = (pos.x - 12) + 'px';
-    rock.style.top = (pos.y - 10) + 'px';
-    rock.style.fontSize = '18px';
-    rock.textContent = ['🪨','💎','⭐','🌸','🍄'][Math.floor(Math.random()*5)];
-    canvas.appendChild(rock);
-  }
+function getNpcBg(lv){var b=["#2c3e50","#8e44ad","#2980b9","#27ae60","#d35400","#c0392b"];return b[Math.min(lv-1,b.length-1)]}
+function movePlayer(tc,tr){
+tc=Math.max(1,Math.min(MAP_COLS-2,tc));tr=Math.max(1,Math.min(MAP_ROWS-2,tr));
+state.playerCol=tc;state.playerRow=tr;
+var pos=gridToScreen(tc,tr),p=document.getElementById("player");
+p.style.left=(pos.x-24)+"px";p.style.top=(pos.y-32)+"px";
+p.classList.add("walking");setTimeout(function(){p.classList.remove("walking")},400);
+updateCamera();updateMinimap();checkNpcProximity();
 }
-
-function placeNpcs() {
-  const npcCount = 15;
-  const positions = [];
-
-  for(let i = 0; i < npcCount; i++) {
-    let col, row, valid;
-    let attempts = 0;
-    do {
-      col = 5 + Math.floor(Math.random() * 40);
-      row = 5 + Math.floor(Math.random() * 40);
-      valid = true;
-      for(const p of positions) {
-        if(Math.abs(col - p.col) < 4 && Math.abs(row - p.row) < 4) {
-          valid = false;
-          break;
-        }
-      }
-      // Not too close to player start (25, 20)
-      if(Math.abs(col - 25) < 5 && Math.abs(row - 20) < 5) valid = false;
-      attempts++;
-    } while(!valid && attempts < 50);
-
-    positions.push({col, row});
-
-    const typeIdx = i % NPC_TYPES.length;
-    const npcType = NPC_TYPES[typeIdx];
-    const npc = {
-      id: i,
-      col, row,
-      type: npcType,
-      name: NPC_NAMES[npcType] || '神秘人',
-      level: Math.ceil((i+1) / 3),
-      answered: false,
-    };
-    state.npcs.push(npc);
-
-    const pos = gridToScreen(col, row);
-    const el = document.createElement('div');
-    el.className = 'npc';
-    el.id = `npc_${i}`;
-    el.style.cssText = `left:${pos.x - 24}px;top:${pos.y - 32}px;background:${getNpcBg(npc.level)}`;
-    el.innerHTML = `${npc.type}<span class="npc-name">${npc.name} Lv.${npc.level}</span>`;
-    el.onclick = (e) => { e.stopPropagation(); interactNpc(i); };
-    document.getElementById('mapCanvas').appendChild(el);
-  }
-
-  document.getElementById('totalNpcDisplay').textContent = npcCount;
+function updateCamera(){
+var wm=document.getElementById("worldMap"),vw=wm.clientWidth,vh=wm.clientHeight;
+var pp=gridToScreen(state.playerCol,state.playerRow);
+var cx=pp.x-vw/2,cy=pp.y-vh/2;
+cx=Math.max(-400,Math.min(2800,cx));cy=Math.max(-200,Math.min(2000,cy));
+document.getElementById("mapCanvas").style.transform="translate("+(-cx)+"px, "+(-cy)+"px)";
 }
-
-function getNpcBg(level) {
-  const bgs = ['#2c3e50','#8e44ad','#2980b9','#27ae60','#d35400','#c0392b'];
-  return bgs[Math.min(level-1, bgs.length-1)];
+function updateMinimap(){
+var sx=150/MAP_COLS,sy=112/MAP_ROWS;
+document.getElementById("minimapView").style.cssText="left:"+(state.playerCol*sx-10)+"px;top:"+(state.playerRow*sy-10)+"px;width:20px;height:20px";
+document.getElementById("minimapPlayer").style.cssText="left:"+(state.playerCol*sx-3)+"px;top:"+(state.playerRow*sy-3)+"px";
 }
-// ============================================================
-// PLAYER MOVEMENT
-// ============================================================
-
-function movePlayer(targetCol, targetRow) {
-  targetCol = Math.max(1, Math.min(MAP_COLS - 2, targetCol));
-  targetRow = Math.max(1, Math.min(MAP_ROWS - 2, targetRow));
-  state.playerCol = targetCol;
-  state.playerRow = targetRow;
-  const pos = gridToScreen(targetCol, targetRow);
-  const player = document.getElementById('player');
-  player.style.left = (pos.x - 24) + 'px';
-  player.style.top = (pos.y - 32) + 'px';
-  player.classList.add('walking');
-  setTimeout(() => player.classList.remove('walking'), 400);
-  updateCamera();
-  updateMinimap();
-  checkNpcProximity();
-}
-
-function updateCamera() {
-  const worldMap = document.getElementById('worldMap');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-  const playerPos = gridToScreen(state.playerCol, state.playerRow);
-  let camX = playerPos.x - vw / 2;
-  let camY = playerPos.y - vh / 2;
-  camX = Math.max(-400, Math.min(2800, camX));
-  camY = Math.max(-200, Math.min(2000, camY));
-  document.getElementById('mapCanvas').style.transform = 'translate(' + (-camX) + 'px, ' + (-camY) + 'px)';
-}
-
-function updateMinimap() {
-  const mmW = 150, mmH = 112;
-  const scaleX = mmW / MAP_COLS;
-  const scaleY = mmH / MAP_ROWS;
-  document.getElementById('minimapView').style.cssText = 'left:' + (state.playerCol * scaleX - 10) + 'px;top:' + (state.playerRow * scaleY - 10) + 'px;width:20px;height:20px';
-  document.getElementById('minimapPlayer').style.cssText = 'left:' + (state.playerCol * scaleX - 3) + 'px;top:' + (state.playerRow * scaleY - 3) + 'px';
-}
-
-// Click to move
-document.getElementById('worldMap').addEventListener('click', function(e) {
-  var rect = document.getElementById('worldMap').getBoundingClientRect();
-  var clickX = e.clientX - rect.left;
-  var clickY = e.clientY - rect.top;
-  var worldMapEl = document.getElementById('worldMap');
-  var vw = worldMapEl.clientWidth;
-  var vh = worldMapEl.clientHeight;
-  var playerPos = gridToScreen(state.playerCol, state.playerRow);
-  var camX = playerPos.x - vw / 2;
-  var camY = playerPos.y - vh / 2;
-  var worldX = clickX + camX;
-  var worldY = clickY + camY;
-  showClickIndicator(clickX, clickY);
-  var grid = screenToGrid(worldX, worldY);
-  movePlayer(grid.col, grid.row);
+document.getElementById("worldMap").addEventListener("click",function(e){
+var rect=document.getElementById("worldMap").getBoundingClientRect();
+var cx=e.clientX-rect.left,cy=e.clientY-rect.top;
+var wm=document.getElementById("worldMap"),vw=wm.clientWidth,vh=wm.clientHeight;
+var pp=gridToScreen(state.playerCol,state.playerRow);
+var camX=pp.x-vw/2,camY=pp.y-vh/2;
+showClickIndicator(cx,cy);
+var g=screenToGrid(cx+camX,cy+camY);movePlayer(g.col,g.row);
 });
-
-function showClickIndicator(x, y) {
-  var indicator = document.createElement('div');
-  indicator.id = 'clickIndicator';
-  indicator.style.left = x + 'px';
-  indicator.style.top = y + 'px';
-  document.getElementById('worldMap').appendChild(indicator);
-  setTimeout(function() { indicator.remove(); }, 600);
+function showClickIndicator(x,y){
+var el=document.createElement("div");el.id="clickIndicator";el.style.left=x+"px";el.style.top=y+"px";
+document.getElementById("worldMap").appendChild(el);setTimeout(function(){el.remove()},600);
 }
-
-// ============================================================
-// NPC INTERACTION
-// ============================================================
-
-function checkNpcProximity() {
-  for(var i = 0; i < state.npcs.length; i++) {
-    var npc = state.npcs[i];
-    if(npc.answered) continue;
-    var dist = Math.abs(state.playerCol - npc.col) + Math.abs(state.playerRow - npc.row);
-    if(dist < 3) {
-      interactNpc(npc.id);
-      break;
-    }
-  }
+function checkNpcProximity(){
+for(var i=0;i<state.npcs.length;i++){var n=state.npcs[i];if(n.answered)continue;if(Math.abs(state.playerCol-n.col)+Math.abs(state.playerRow-n.row)<3){interactNpc(n.id);break}}
 }
-
-function interactNpc(npcId) {
-  var npc = state.npcs[npcId];
-  if(!npc || npc.answered) return;
-  state.currentNpc = npc;
-  var levelQuestions = allQuestions.filter(function(q) { return q.level <= npc.level + 2; });
-  var pool = levelQuestions.length > 0 ? levelQuestions : allQuestions;
-  state.currentQuestion = pool[Math.floor(Math.random() * pool.length)];
-  showQuestion();
+function interactNpc(id){var n=state.npcs[id];if(!n||n.answered)return;state.currentNpc=n;var pool=allQuestions.length>0?allQuestions:generateQuestions();state.currentQuestion=pool[Math.floor(Math.random()*pool.length)];showQuestion()}
+function showQuestion(){
+var q=state.currentQuestion,n=state.currentNpc;if(!q||!n)return;
+state.answered=false;
+document.getElementById("qNpcIcon").textContent=n.type;
+document.getElementById("qNpcName").textContent=n.name+" Lv."+n.level;
+document.getElementById("qText").innerHTML=q.question.replace("___",'<span class="blank">___</span>');
+var oe=document.getElementById("qOptions");oe.innerHTML="";
+q.options.forEach(function(opt,i){var btn=document.createElement("button");btn.className="q-option";btn.textContent=String.fromCharCode(65+i)+". "+opt;btn.onclick=function(){checkAnswer(i)};oe.appendChild(btn)});
+document.getElementById("qFeedback").className="q-feedback";document.getElementById("qCoinsEarned").textContent="";
+document.getElementById("questionOverlay").classList.add("show");
 }
-
-// ============================================================
-// QUESTION SYSTEM
-// ============================================================
-
-function showQuestion() {
-  var q = state.currentQuestion;
-  var npc = state.currentNpc;
-  if(!q || !npc) return;
-  state.answered = false;
-  document.getElementById('qNpcIcon').textContent = npc.type;
-  document.getElementById('qNpcName').textContent = npc.name + ' Lv.' + npc.level;
-  document.getElementById('qText').innerHTML = q.question.replace('___', '<span class="blank">___</span>');
-  var optsEl = document.getElementById('qOptions');
-  optsEl.innerHTML = '';
-  q.options.forEach(function(opt, i) {
-    var btn = document.createElement('button');
-    btn.className = 'q-option';
-    btn.textContent = String.fromCharCode(65+i) + '. ' + opt;
-    btn.onclick = (function(idx) { return function() { checkAnswer(idx); }; })(i);
-    optsEl.appendChild(btn);
-  });
-  document.getElementById('qFeedback').className = 'q-feedback';
-  document.getElementById('qCoinsEarned').textContent = '';
-  document.getElementById('questionOverlay').classList.add('show');
+function checkAnswer(idx){
+var q=state.currentNpc&&state.currentQuestion,n=state.currentNpc;if(!q||!n)return;
+if(state.answered)return;state.answered=true;
+var ok=idx===q.answer;
+document.querySelectorAll(".q-option").forEach(function(b,i){b.classList.add("disabled");b.onclick=null;if(i===q.answer)b.classList.add("correct");else if(i===idx&&!ok)b.classList.add("wrong")});
+var fb=document.getElementById("qFeedback"),ft=document.getElementById("qFeedbackTitle"),fe=document.getElementById("qFeedbackExp"),ce=document.getElementById("qCoinsEarned");
+if(ok){var coins=5+n.level*2,xp=10+n.level*5;state.coins+=coins;state.xp+=xp;state.score++;state.answered++;n.answered=true;state.answeredNpcs.add(n.id);fb.className="q-feedback show correct";ft.textContent="&#x2705; &#x7B54;&#x5C0D;&#x4E86;&#xFF01;";fe.textContent=q.explanation;ce.textContent="+"+coins+" &#x1FA99;  +"+xp+" &#x26A1; XP";var ne=document.getElementById("npc_"+n.id);if(ne)ne.classList.add("answered");showFloatText("+"+coins+" &#x1FA99;","gold");updateHud();if(state.answeredNpcs.size>=state.npcs.length){setTimeout(function(){showFloatText("&#x1F389; &#x5168;&#x90E8;&#x5B8C;&#x6210;&#xFF01;&#x65B0;&#x4E00;&#x8F2A;&#x958B;&#x59CB;&#xFF01;","gold");resetAllNpcs()},1500)}
+}else{fb.className="q-feedback show wrong";ft.textContent="&#x274C; &#x7B54;&#x932F;&#x4E86;";fe.textContent=q.explanation;ce.textContent="";showFloatText("&#x518D;&#x8A66;&#x904E;&#xFF01;","red")}
+setTimeout(function(){document.getElementById("questionOverlay").classList.remove("show");state.currentNpc=null;state.currentQuestion=null},2500);
 }
-
-function checkAnswer(idx) {
-  var q = state.currentQuestion;
-  var npc = state.currentNpc;
-  if(!q || !npc) return;
-  if(state.answered) return;
-  state.answered = true;
-  var isCorrect = idx === q.answer;
-  var opts = document.querySelectorAll('.q-option');
-  opts.forEach(function(b, i) {
-    b.classList.add('disabled');
-    b.onclick = null;
-    if(i === q.answer) b.classList.add('correct');
-    else if(i === idx && !isCorrect) b.classList.add('wrong');
-  });
-  var feedback = document.getElementById('qFeedback');
-  var feedbackTitle = document.getElementById('qFeedbackTitle');
-  var feedbackExp = document.getElementById('qFeedbackExp');
-  var coinsEarned = document.getElementById('qCoinsEarned');
-  if(isCorrect) {
-    var coins = 5 + npc.level * 2;
-    var xp = 10 + npc.level * 5;
-    state.coins += coins;
-    state.xp += xp;
-    state.score++;
-    state.answered++;
-    npc.answered = true;
-    state.answeredNpcs.add(npc.id);
-    feedback.className = 'q-feedback show correct';
-    feedbackTitle.textContent = '✅ 答對了！';
-    feedbackExp.textContent = q.explanation;
-    coinsEarned.textContent = '+' + coins + ' 🪙  +' + xp + ' ⚡ XP';
-    var npcEl = document.getElementById('npc_' + npc.id);
-    if(npcEl) npcEl.classList.add('answered');
-    showFloatText('+' + coins + ' 🪙', 'gold');
-    updateHud();
-    if(state.answeredNpcs.size >= state.npcs.length) {
-      setTimeout(function() {
-        showFloatText('🎉 全部完成！新一輪開始！', 'gold');
-        resetAllNpcs();
-      }, 1500);
-    }
-  } else {
-    feedback.className = 'q-feedback show wrong';
-    feedbackTitle.textContent = '❌ 答錯了';
-    feedbackExp.textContent = q.explanation;
-    coinsEarned.textContent = '';
-    showFloatText('再試過！', 'red');
-  }
-  setTimeout(function() {
-    document.getElementById('questionOverlay').classList.remove('show');
-    state.currentNpc = null;
-    state.currentQuestion = null;
-  }, 2500);
+function resetAllNpcs(){state.answeredNpcs.clear();state.answered=0;state.npcs=[];document.querySelectorAll(".npc").forEach(function(el){el.remove()});allQuestions=generateQuestions();placeNpcs();updateHud()}
+function confirmReset(){if(confirm("&#x78BA;&#x5B9A;&#x8981;&#x91CD;&#x7F6E;&#x89D2;&#x8272;&#x55CE;&#xFF1F;\n\n&#x91D1;&#x5E63;&#x3001;&#x88DD;&#x5099;&#x3001;&#x9032;&#x5EA6;&#x90FD;&#x6703;&#x6E05;&#x9664;&#xFF01;"))resetGame()}
+function resetGame(){
+localStorage.removeItem("grammarQuestSave");
+state.coins=0;state.xp=0;state.score=0;state.answered=0;state.playerCol=20;state.playerRow=15;
+state.equipped={hat:"hat_0",body:"body_0",pants:"pants_0",shoes:"shoes_0",weapon:"weapon_0",cape:"cape_0"};
+state.owned=["hat_0","body_0","pants_0","shoes_0","weapon_0","cape_0"];
+state.answeredNpcs.clear();state.npcs=[];state.currentNpc=null;state.currentQuestion=null;
+document.querySelectorAll(".npc").forEach(function(el){el.remove()});
+document.getElementById("questionOverlay").classList.remove("show");
+allQuestions=generateQuestions();buildMap();movePlayer(state.playerCol,state.playerRow);updateCharacterDisplay();updateHud();
+showFloatText("&#x1F504; &#x89D2;&#x8272;&#x5DF2;&#x91CD;&#x7F6E;&#xFF01;","gold");
 }
-
-function resetAllNpcs() {
-  state.answeredNpcs.clear();
-  state.answered = 0;
-  state.npcs = [];
-  document.querySelectorAll('.npc').forEach(function(el) { el.remove(); });
-  allQuestions = generateQuestions();
-  placeNpcs();
-  updateHud();
+function openShop(){
+var panel=document.getElementById("shopPanel"),content=document.getElementById("shopContent");
+document.getElementById("shopCoins").textContent=state.coins;
+var html="";var cats=[{key:"hat",name:"&#x1F9E2; &#x5E3D;&#x5B50;"},{key:"body",name:"&#x1F455; &#x4E0A;&#x8863;"},{key:"pants",name:"&#x1FA73; &#x8932;&#x5B50;"},{key:"shoes",name:"&#x1F45F; &#x978B;&#x5B50;"},{key:"weapon",name:"&#x2694;&#xFE0F; &#x6B66;&#x5668;"},{key:"cape",name:"&#x1F9E3; &#x62AB;&#x98A8;"}];
+cats.forEach(function(cat){
+html+='<div class="shop-category">'+cat.name+'</div><div class="shop-grid">';
+EQUIPMENT[cat.key].forEach(function(item){
+var owned=state.owned.includes(item.id);
+html+='<div class="shop-item '+(owned?"owned":"")+'" onclick="buyItem(\''+cat.key+'\',\''+item.id+'\')"><div class="item-icon">'+(item.icon||"&#x2796;")+'</div><div class="item-name">'+item.name+'</div><div class="item-price">'+(owned?"&#x5DF2;&#x64C1;&#x6709;":item.price+" &#x1FA99;")+"</div></div>";
+});html+="</div>";
+});content.innerHTML=html;panel.classList.add("show");
 }
-
-function confirmReset() {
-  if(confirm('確定要重置角色嗎？\n\n金幣、裝備、進度都會清除！')) {
-    resetGame();
-  }
+function closeShop(){document.getElementById("shopPanel").classList.remove("show")}
+function buyItem(cat,id){
+if(state.owned.includes(id))return;
+var item=EQUIPMENT[cat].find(function(i){return i.id===id});if(!item)return;
+if(state.coins<item.price){alert("&#x91D1;&#x5E63;&#x4E0D;&#x8DB3;&#xFF01;");return}
+state.coins-=item.price;state.owned.push(id);document.getElementById("shopCoins").textContent=state.coins;updateHud();
+openShop();showFloatText("&#x8CB7;&#x5230; "+item.name+"&#xFF01;","gold");
 }
-
-function resetGame() {
-  localStorage.removeItem('grammarQuestSave');
-  state.coins = 0;
-  state.xp = 0;
-  state.score = 0;
-  state.answered = 0;
-  state.playerCol = 20;
-  state.playerRow = 15;
-  state.equipped = {hat:'hat_0',body:'body_0',pants:'pants_0',shoes:'shoes_0',weapon:'weapon_0',cape:'cape_0'};
-  state.owned = ['hat_0','body_0','pants_0','shoes_0','weapon_0','cape_0'];
-  state.answeredNpcs.clear();
-  state.npcs = [];
-  state.currentNpc = null;
-  state.currentQuestion = null;
-  document.querySelectorAll('.npc').forEach(function(el) { el.remove(); });
-  document.getElementById('questionOverlay').classList.remove('show');
-  allQuestions = generateQuestions();
-  buildMap();
-  movePlayer(state.playerCol, state.playerRow);
-  updateCharacterDisplay();
-  updateHud();
-  showFloatText('🔄 角色已重置！', 'gold');
+function openInventory(){
+var panel=document.getElementById("inventoryPanel"),content=document.getElementById("invContent");
+var html="";var cats=[{key:"hat",name:"&#x1F9E2; &#x5E3D;&#x5B50;"},{key:"body",name:"&#x1F455; &#x4E0A;&#x8863;"},{key:"pants",name:"&#x1FA73; &#x8932;&#x5B50;"},{key:"shoes",name:"&#x1F45F; &#x978B;&#x5B50;"},{key:"weapon",name:"&#x2694;&#xFE0F; &#x6B66;&#x5668;"},{key:"cape",name:"&#x1F9E3; &#x62AB;&#x98A8;"}];
+cats.forEach(function(cat){
+html+='<div class="shop-category">'+cat.name+'</div><div class="inv-grid">';
+EQUIPMENT[cat.key].forEach(function(item){
+if(!state.owned.includes(item.id))return;
+var eq=state.equipped[cat.key]===item.id;
+html+='<div class="inv-item '+(eq?"equipped":"")+'" onclick="equipItem(\''+cat.key+'\',\''+item.id+'\')"><div class="item-icon">'+(item.icon||"&#x2796;")+'</div><div class="item-name">'+item.name+"</div></div>";
+});html+="</div>";
+});content.innerHTML=html;panel.classList.add("show");
 }
-
-// ============================================================
-// SHOP
-// ============================================================
-
-function openShop() {
-  const panel = document.getElementById('shopPanel');
-  const content = document.getElementById('shopContent');
-  document.getElementById('shopCoins').textContent = state.coins;
-
-  let html = '';
-  const categories = [
-    {key:'hat', name:'🎩 帽子'},
-    {key:'body', name:'👕 上衣'},
-    {key:'pants', name:'🩳 褲子'},
-    {key:'shoes', name:'👟 鞋子'},
-    {key:'weapon', name:'⚔️ 武器'},
-    {key:'cape', name:'🧣 披風'},
-  ];
-
-  categories.forEach(cat => {
-    html += `<div class="shop-category">${cat.name}</div><div class="shop-grid">`;
-    EQUIPMENT[cat.key].forEach(item => {
-      const owned = state.owned.includes(item.id);
-      html += `<div class="shop-item ${owned ? 'owned' : ''}" onclick="buyItem('${cat.key}','${item.id}')">
-        <div class="item-icon">${item.icon || '➖'}</div>
-        <div class="item-name">${item.name}</div>
-        <div class="item-price">${owned ? '已擁有' : item.price + ' 🪙'}</div>
-      </div>`;
-    });
-    html += '</div>';
-  });
-
-  content.innerHTML = html;
-  panel.classList.add('show');
+function closeInventory(){document.getElementById("inventoryPanel").classList.remove("show")}
+function equipItem(cat,id){if(!state.owned.includes(id))return;state.equipped[cat]=id;updateCharacterDisplay();openInventory()}
+function updateCharacterDisplay(){
+["hat","body","pants","shoes","weapon","cape"].forEach(function(layer){
+var el=document.getElementById("char"+layer.charAt(0).toUpperCase()+layer.slice(1));if(!el)return;
+var item=EQUIPMENT[layer].find(function(i){return i.id===state.equipped[layer]});
+if(item&&item.icon){el.textContent=item.icon;el.style.display="flex"}else{el.textContent="";el.style.display="none"}
+});
 }
-
-function closeShop() {
-  document.getElementById('shopPanel').classList.remove('show');
+function updateHud(){
+document.getElementById("coinDisplay").textContent=state.coins;
+document.getElementById("xpDisplay").textContent=state.xp;
+document.getElementById("scoreDisplay").textContent=state.score;
+document.getElementById("answeredDisplay").textContent=state.answered;
 }
-
-function buyItem(category, itemId) {
-  if(state.owned.includes(itemId)) return;
-
-  const item = EQUIPMENT[category].find(i => i.id === itemId);
-  if(!item) return;
-
-  if(state.coins < item.price) {
-    alert('金幣不足！');
-    return;
-  }
-
-  state.coins -= item.price;
-  state.owned.push(itemId);
-  document.getElementById('shopCoins').textContent = state.coins;
-  updateHud();
-
-  // Refresh shop
-  openShop();
-  showFloatText(`買到 ${item.name}！`, 'gold');
+function showFloatText(text,type){
+var el=document.createElement("div");el.className="float-text float-"+type;el.textContent=text;
+var pos=gridToScreen(state.playerCol,state.playerRow);
+var wm=document.getElementById("worldMap"),vw=wm.clientWidth,vh=wm.clientHeight;
+var cx=pos.x-vw/2,cy=pos.y-vh/2;
+el.style.left=(pos.x-cx-30)+"px";el.style.top=(pos.y-cy-40)+"px";
+document.getElementById("worldMap").appendChild(el);setTimeout(function(){el.remove()},1500);
 }
-
-// ============================================================
-// INVENTORY
-// ============================================================
-
-function openInventory() {
-  const panel = document.getElementById('inventoryPanel');
-  const content = document.getElementById('invContent');
-
-  let html = '';
-  const categories = [
-    {key:'hat', name:'🎩 帽子'},
-    {key:'body', name:'👕 上衣'},
-    {key:'pants', name:'🩳 褲子'},
-    {key:'shoes', name:'👟 鞋子'},
-    {key:'weapon', name:'⚔️ 武器'},
-    {key:'cape', name:'🧣 披風'},
-  ];
-
-  categories.forEach(cat => {
-    html += `<div class="shop-category">${cat.name}</div><div class="inv-grid">`;
-    EQUIPMENT[cat.key].forEach(item => {
-      const owned = state.owned.includes(item.id);
-      const equipped = state.equipped[cat.key] === item.id;
-      if(!owned) return;
-      html += `<div class="inv-item ${equipped ? 'equipped' : ''}" onclick="equipItem('${cat.key}','${item.id}')">
-        <div class="item-icon">${item.icon || '➖'}</div>
-        <div class="item-name">${item.name}</div>
-      </div>`;
-    });
-    html += '</div>';
-  });
-
-  content.innerHTML = html;
-  panel.classList.add('show');
+function startGame(){
+document.getElementById("startScreen").classList.add("hidden");
+loadGame();allQuestions=generateQuestions();buildMap();
+movePlayer(state.playerCol,state.playerRow);updateCharacterDisplay();updateHud();
+setInterval(saveGame,30000);
 }
-
-function closeInventory() {
-  document.getElementById('inventoryPanel').classList.remove('show');
+function saveGame(){
+var s={coins:state.coins,xp:state.xp,score:state.score,answered:state.answered,playerCol:state.playerCol,playerRow:state.playerRow,equipped:state.equipped,owned:state.owned,answeredNpcs:Array.from(state.answeredNpcs)};
+localStorage.setItem("grammarQuestSave",JSON.stringify(s));
 }
-
-function equipItem(category, itemId) {
-  if(!state.owned.includes(itemId)) return;
-
-  state.equipped[category] = itemId;
-  updateCharacterDisplay();
-  openInventory(); // refresh
+function loadGame(){
+try{var s=JSON.parse(localStorage.getItem("grammarQuestSave"));if(s){
+state.coins=s.coins||0;state.xp=s.xp||0;state.score=s.score||0;state.answered=s.answered||0;
+state.playerCol=s.playerCol||20;state.playerRow=s.playerRow||15;
+state.equipped=s.equipped||state.equipped;state.owned=s.owned||state.owned;
+state.answeredNpcs=new Set(s.answeredNpcs||[]);
+}}catch(e){}
 }
-
-function updateCharacterDisplay() {
-  const layers = ['hat','body','pants','shoes','weapon','cape'];
-  layers.forEach(layer => {
-    const el = document.getElementById('char' + layer.charAt(0).toUpperCase() + layer.slice(1));
-    if(!el) return;
-    const itemId = state.equipped[layer];
-    const item = EQUIPMENT[layer].find(i => i.id === itemId);
-    if(item && item.icon) {
-      el.textContent = item.icon;
-      el.style.display = 'flex';
-    } else {
-      el.textContent = '';
-      el.style.display = 'none';
-    }
-  });
-}
-
-// ============================================================
-// HUD & UTILITIES
-// ============================================================
-
-function updateHud() {
-  document.getElementById('coinDisplay').textContent = state.coins;
-  document.getElementById('xpDisplay').textContent = state.xp;
-  document.getElementById('scoreDisplay').textContent = state.score;
-  document.getElementById('answeredDisplay').textContent = state.answered;
-}
-
-function showFloatText(text, type) {
-  const el = document.createElement('div');
-  el.className = `float-text float-${type}`;
-  el.textContent = text;
-  // Use grid coordinates for positioning
-  const pos = gridToScreen(state.playerCol, state.playerRow);
-  const worldMap = document.getElementById('worldMap');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-  const camX = pos.x - vw / 2;
-  const camY = pos.y - vh / 2;
-  el.style.left = (pos.x - camX - 30) + 'px';
-  el.style.top = (pos.y - camY - 40) + 'px';
-  document.getElementById('worldMap').appendChild(el);
-  setTimeout(() => el.remove(), 1500);
-}
-
-// ============================================================
-// GAME START
-// ============================================================
-
-function startGame() {
-  document.getElementById('startScreen').classList.add('hidden');
-
-  // Load saved state
-  loadGame();
-
-  // Generate questions
-  allQuestions = generateQuestions();
-
-  // Build map
-  buildMap();
-
-  // Place player
-  movePlayer(state.playerCol, state.playerRow);
-
-  // Update character
-  updateCharacterDisplay();
-
-  // Update HUD
-  updateHud();
-
-  // Auto-save periodically
-  setInterval(saveGame, 30000);
-}
-
-// ============================================================
-// SAVE / LOAD
-// ============================================================
-
-function saveGame() {
-  const save = {
-    coins: state.coins,
-    xp: state.xp,
-    score: state.score,
-    answered: state.answered,
-    playerCol: state.playerCol,
-    playerRow: state.playerRow,
-    equipped: state.equipped,
-    owned: state.owned,
-    answeredNpcs: Array.from(state.answeredNpcs),
-  };
-  localStorage.setItem('grammarQuestSave', JSON.stringify(save));
-}
-
-function loadGame() {
-  try {
-    const save = JSON.parse(localStorage.getItem('grammarQuestSave'));
-    if(save) {
-      state.coins = save.coins || 0;
-      state.xp = save.xp || 0;
-      state.score = save.score || 0;
-      state.answered = save.answered || 0;
-      state.playerCol = save.playerCol || 20;
-      state.playerRow = save.playerRow || 15;
-      state.equipped = save.equipped || state.equipped;
-      state.owned = save.owned || state.owned;
-      state.answeredNpcs = new Set(save.answeredNpcs || []);
-    }
-  } catch(e) {}
-}
-
-// ============================================================
-// INIT
-// ============================================================
-
-// Preload
-allQuestions = generateQuestions();
+allQuestions=generateQuestions();
 </script>
 </body>
 </html>
