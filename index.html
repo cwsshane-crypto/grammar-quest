@@ -1044,6 +1044,8 @@ function showQuestion() {
   const npc = state.currentNpc;
   if(!q || !npc) return;
 
+  state.answered = false; // reset answer lock for new question
+
   document.getElementById('qNpcIcon').textContent = npc.type;
   document.getElementById('qNpcName').textContent = `${npc.name} Lv.${npc.level}`;
   document.getElementById('qText').innerHTML = q.question.replace('___', '<span class="blank">___</span>');
@@ -1067,11 +1069,15 @@ function checkAnswer(idx) {
   const q = state.currentQuestion;
   const npc = state.currentNpc;
   if(!q || !npc) return;
+  if(state.answered) return; // prevent double-answering
+
+  state.answered = true; // lock immediately
 
   const isCorrect = idx === q.answer;
   const opts = document.querySelectorAll('.q-option');
   opts.forEach((b, i) => {
     b.classList.add('disabled');
+    b.onclick = null; // remove click handler
     if(i === q.answer) b.classList.add('correct');
     else if(i === idx && !isCorrect) b.classList.add('wrong');
   });
