@@ -9,35 +9,52 @@
 body{font-family:'Segoe UI',Tahoma,Geneva,Verdana,sans-serif;background:#1a1a2e;color:#e0e0e0;overflow:hidden;height:100vh;width:100vw;touch-action:manipulation}
 
 /* ===== WORLD MAP ===== */
-#worldMap{position:relative;width:100%;height:100%;overflow:hidden;cursor:crosshair}
-#mapCanvas{position:absolute;top:0;left:0;width:2400px;height:1800px;background:#2d5a27;transition:transform 0.3s ease}
+#worldMap{position:relative;width:100%;height:100%;overflow:hidden;cursor:crosshair;background:#1a1a2e}
+#mapCanvas{position:absolute;top:0;left:0;width:3200px;height:2400px;transition:transform 0.15s ease-out;transform-origin:0 0}
 
-/* Terrain tiles */
-.terrain{position:absolute;border-radius:4px}
-.grass{background:#3a7d32}
-.path{background:#c4a265}
-.water{background:#2980b9}
-.forest{background:#1a5c1a}
-.stone{background:#7f8c8d}
-.sand{background:#d4a574}
-.castle{background:#5a4a3a}
-.village{background:#8b7355}
+/* Isometric ground tiles */
+.tile{position:absolute;width:64px;height:32px}
+.tile-grass{background:linear-gradient(135deg,#4a8c3f,#3a7d32);border:1px solid rgba(255,255,255,0.08)}
+.tile-grass2{background:linear-gradient(135deg,#3f8a35,#35802c);border:1px solid rgba(255,255,255,0.08)}
+.tile-path{background:linear-gradient(135deg,#c4a265,#b8963f);border:1px solid rgba(255,255,255,0.1)}
+.tile-water{background:linear-gradient(135deg,#2980b9,#1a6da0);border:1px solid rgba(255,255,255,0.1);animation:waterShimmer 3s ease-in-out infinite}
+.tile-sand{background:linear-gradient(135deg,#d4a574,#c4955a);border:1px solid rgba(255,255,255,0.08)}
+.tile-stone{background:linear-gradient(135deg,#7f8c8d,#6c7a7d);border:1px solid rgba(255,255,255,0.08)}
+.tile-dirt{background:linear-gradient(135deg,#8b6914,#7a5c12);border:1px solid rgba(255,255,255,0.08)}
+.tile-snow{background:linear-gradient(135deg,#ecf0f1,#d5dbdb);border:1px solid rgba(255,255,255,0.15)}
+.tile-lava{background:linear-gradient(135deg,#e74c3c,#c0392b);border:1px solid rgba(255,255,255,0.1);animation:lavaGlow 2s ease-in-out infinite}
+@keyframes waterShimmer{0%,100%{opacity:0.9}50%{opacity:1}}
+@keyframes lavaGlow{0%,100%{box-shadow:0 0 8px rgba(231,76,60,0.4)}50%{box-shadow:0 0 16px rgba(231,76,60,0.7)}}
 
-/* Map objects */
-.map-object{position:absolute;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s}
-.map-object:hover{transform:scale(1.15)}
+/* Isometric diamond shape */
+.iso-tile{clip-path:polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%)}
 
-/* NPC */
-.npc{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all 0.2s;z-index:10;border:3px solid rgba(255,255,255,0.3);box-shadow:0 2px 8px rgba(0,0,0,0.4)}
-.npc:hover{transform:scale(1.25);border-color:#ffd700}
-.npc.answered{opacity:0.5;border-color:#666}
-.npc .npc-name{position:absolute;bottom:-18px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:#fff;text-shadow:0 1px 3px #000;background:rgba(0,0,0,0.6);padding:1px 6px;border-radius:8px}
+/* Map objects - 3D styled */
+.map-object{position:absolute;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform 0.2s;z-index:5}
+.map-object:hover{transform:scale(1.2)}
 
-/* Player */
-#player{position:absolute;width:44px;height:44px;z-index:20;transition:top 0.4s ease,left 0.4s ease;pointer-events:none}
-#player .char-body{position:relative;width:100%;height:100%}
-#player .char-layer{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:26px}
-#player .char-shadow{position:absolute;bottom:-2px;left:50%;transform:translateX(-50%);width:30px;height:8px;background:rgba(0,0,0,0.3);border-radius:50%}
+/* Trees - 3D look */
+.tree-3d{position:absolute;font-size:32px;filter:drop-shadow(2px 4px 3px rgba(0,0,0,0.4));z-index:3}
+.tree-3d::after{content:'';position:absolute;bottom:-4px;left:50%;transform:translateX(-50%);width:20px;height:8px;background:rgba(0,0,0,0.3);border-radius:50%}
+
+/* Buildings */
+.building{position:absolute;display:flex;align-items:center;justify-content:center;font-size:36px;filter:drop-shadow(3px 5px 4px rgba(0,0,0,0.5));z-index:4}
+
+/* NPC - 3D styled */
+.npc{position:absolute;width:48px;height:48px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:28px;cursor:pointer;transition:all 0.2s;z-index:10;border:3px solid rgba(255,255,255,0.3);box-shadow:0 4px 8px rgba(0,0,0,0.4),inset 0 -2px 4px rgba(0,0,0,0.2)}
+.npc:hover{transform:scale(1.25);border-color:#ffd700;box-shadow:0 6px 16px rgba(255,215,0,0.3)}
+.npc.answered{opacity:0.4;border-color:#666;filter:grayscale(0.8)}
+.npc .npc-name{position:absolute;bottom:-20px;left:50%;transform:translateX(-50%);font-size:10px;white-space:nowrap;color:#fff;text-shadow:0 1px 4px #000;background:rgba(0,0,0,0.7);padding:2px 8px;border-radius:10px;border:1px solid rgba(255,255,255,0.15)}
+
+/* Player - 3D character */
+#player{position:absolute;z-index:20;pointer-events:none;transition:left 0.15s ease-out,top 0.15s ease-out}
+#player .char-sprite{position:relative;width:48px;height:48px;display:flex;align-items:center;justify-content:center;filter:drop-shadow(2px 4px 4px rgba(0,0,0,0.5))}
+#player .char-layer{position:absolute;top:0;left:0;width:100%;height:100%;display:flex;align-items:center;justify-content:center;font-size:24px}
+#player .char-shadow{position:absolute;bottom:-6px;left:50%;transform:translateX(-50%);width:28px;height:10px;background:rgba(0,0,0,0.35);border-radius:50%;z-index:-1}
+
+/* Player bounce animation */
+@keyframes playerBounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+.walking .char-sprite{animation:playerBounce 0.3s ease-in-out infinite}
 
 /* Click indicator */
 #clickIndicator{position:absolute;width:30px;height:30px;border:3px solid #ffd700;border-radius:50%;pointer-events:none;z-index:15;animation:clickPulse 0.6s ease-out forwards}
@@ -293,15 +310,15 @@ const NPC_NAMES = {
 
 // Map regions
 const REGIONS = [
-  {name:'翡翠森林', x:0, y:0, w:800, h:600, color:'#1a5c1a', type:'forest'},
-  {name:'黃金草原', x:800, y:0, w:800, h:500, color:'#3a7d32', type:'grass'},
-  {name:'藍寶石湖', x:1600, y:0, w:800, h:600, color:'#1a5276', type:'water'},
-  {name:'石牙山脈', x:0, y:600, w:600, h:600, color:'#5a5a5a', type:'mountain'},
-  {name:'皇家城堡', x:600, y:500, w:800, h:700, color:'#4a3a2a', type:'castle'},
-  {name:'星光沙漠', x:1400, y:600, w:1000, h:500, color:'#b8860b', type:'desert'},
-  {name:'暗影沼澤', x:0, y:1200, w:800, h:600, color:'#2a4a2a', type:'swamp'},
-  {name:'水晶洞穴', x:800, y:1200, w:800, h:600, color:'#3a3a6a', type:'cave'},
-  {name:'雲端之城', x:1600, y:1100, w:800, h:700, color:'#6a5acd', type:'sky'},
+  {name:'翡翠森林', col:0, row:0, w:12, h:10, type:'forest'},
+  {name:'黃金草原', col:12, row:0, w:12, h:8, type:'grass'},
+  {name:'藍寶石湖', col:24, row:0, w:14, h:10, type:'water'},
+  {name:'石牙山脈', col:0, row:10, w:10, h:10, type:'mountain'},
+  {name:'皇家城堡', col:10, row:8, w:14, h:12, type:'castle'},
+  {name:'星光沙漠', col:24, row:10, w:16, h:8, type:'desert'},
+  {name:'暗影沼澤', col:0, row:20, w:12, h:10, type:'swamp'},
+  {name:'水晶洞穴', col:12, row:20, w:12, h:10, type:'cave'},
+  {name:'雲端之城', col:24, row:18, w:16, h:12, type:'sky'},
 ];
 
 // ============================================================
@@ -313,8 +330,8 @@ let state = {
   xp: 0,
   score: 0,
   answered: 0,
-  playerX: 900,
-  playerY: 700,
+  playerCol: 20,
+  playerRow: 15,
   equipped: {hat:'hat_0', body:'body_0', pants:'pants_0', shoes:'shoes_0', weapon:'weapon_0', cape:'cape_0'},
   owned: ['hat_0','body_0','pants_0','shoes_0','weapon_0','cape_0'],
   npcs: [],
@@ -809,52 +826,86 @@ function generateQuestions() {
 // MAP GENERATION
 // ============================================================
 
+// ============================================================
+// ISOMETRIC MAP SYSTEM
+// ============================================================
+
+// Isometric constants
+const TILE_W = 64;
+const TILE_H = 32;
+const MAP_COLS = 50;
+const MAP_ROWS = 50;
+
+// Convert grid coordinates to screen coordinates
+function gridToScreen(col, row) {
+  const x = (col - row) * (TILE_W / 2) + 1600; // offset to center
+  const y = (col + row) * (TILE_H / 2) + 200;
+  return { x, y };
+}
+
+// Convert screen coordinates to grid
+function screenToGrid(sx, sy) {
+  const x = sx - 1600;
+  const y = sy - 200;
+  const col = (x / (TILE_W / 2) + y / (TILE_H / 2)) / 2;
+  const row = (y / (TILE_H / 2) - x / (TILE_W / 2)) / 2;
+  return { col: Math.floor(col), row: Math.floor(row) };
+}
+
+// Map terrain types per region
+const TERRAIN = {
+  forest: ['tile-grass','tile-grass2'],
+  grass: ['tile-grass','tile-grass2'],
+  water: ['tile-water'],
+  mountain: ['tile-stone','tile-stone'],
+  castle: ['tile-stone','tile-path'],
+  desert: ['tile-sand','tile-sand'],
+  swamp: ['tile-dirt','tile-grass'],
+  cave: ['tile-stone','tile-dirt'],
+  sky: ['tile-snow','tile-grass'],
+};
+
 function buildMap() {
   const canvas = document.getElementById('mapCanvas');
   canvas.innerHTML = '';
 
-  // Draw regions
-  REGIONS.forEach(r => {
-    const el = document.createElement('div');
-    el.className = 'terrain';
-    el.style.cssText = `left:${r.x}px;top:${r.y}px;width:${r.w}px;height:${r.h}px;background:${r.color}`;
-    canvas.appendChild(el);
-  });
+  // Draw isometric ground tiles
+  for(let row = 0; row < MAP_ROWS; row++) {
+    for(let col = 0; col < MAP_COLS; col++) {
+      const pos = gridToScreen(col, row);
+      const tile = document.createElement('div');
+      tile.className = 'tile iso-tile';
 
-  // Draw paths between regions
-  const paths = [
-    {x1:700,y1:300,x2:900,y2:250},{x1:1500,y1:250,x2:1700,y2:300},
-    {x1:500,y1:600,x2:700,y2:500},{x1:1300,y1:500,x2:1500,y2:600},
-    {x1:700,y1:1100,x2:900,y2:1200},{x1:1500,y1:1100,x2:1700,y2:1100},
-    {x1:300,y1:1100,x2:300,y2:1200},{x1:1100,y1:1100,x2:1300,y2:1100},
-  ];
-  paths.forEach(p => {
-    const el = document.createElement('div');
-    el.className = 'terrain path';
-    const x = Math.min(p.x1, p.x2);
-    const y = Math.min(p.y1, p.y2);
-    const w = Math.abs(p.x2 - p.x1) + 40;
-    const h = Math.abs(p.y2 - p.y1) + 40;
-    el.style.cssText = `left:${x-20}px;top:${y-20}px;width:${w}px;height:${h}px;opacity:0.6`;
-    canvas.appendChild(el);
-  });
+      // Determine terrain based on position
+      let terrainType = 'tile-grass';
+      const region = getRegionAt(col, row);
+      if(region) {
+        const types = TERRAIN[region.type] || ['tile-grass'];
+        terrainType = types[(col + row) % types.length];
+      } else {
+        // Add variety
+        const noise = (col * 7 + row * 13) % 10;
+        if(noise < 2) terrainType = 'tile-grass2';
+        else if(noise < 3) terrainType = 'tile-path';
+      }
 
-  // Decorative trees/rocks
-  for(let i=0;i<60;i++) {
-    const el = document.createElement('div');
-    const x = Math.random() * 2300 + 50;
-    const y = Math.random() * 1700 + 50;
-    const isTree = Math.random() > 0.4;
-    el.className = 'map-object';
-    el.style.cssText = `left:${x}px;top:${y}px;font-size:${14+Math.random()*12}px;opacity:0.7`;
-    el.textContent = isTree ? ['🌲','🌳','🌴','🌿','🍀'][Math.floor(Math.random()*5)] : ['🪨','💎','⭐'][Math.floor(Math.random()*3)];
-    canvas.appendChild(el);
+      tile.classList.add(terrainType);
+      tile.style.left = pos.x + 'px';
+      tile.style.top = pos.y + 'px';
+      tile.dataset.col = col;
+      tile.dataset.row = row;
+      canvas.appendChild(tile);
+    }
   }
 
-  // Region labels
+  // Draw decorations
+  drawDecorations(canvas);
+
+  // Draw region labels
   REGIONS.forEach(r => {
+    const pos = gridToScreen(r.col, r.row);
     const el = document.createElement('div');
-    el.style.cssText = `position:absolute;left:${r.x + r.w/2 - 40}px;top:${r.y + 20}px;font-size:13px;font-weight:700;color:rgba(255,255,255,0.4);pointer-events:none;text-shadow:0 1px 3px #000`;
+    el.style.cssText = `position:absolute;left:${pos.x}px;top:${pos.y}px;font-size:14px;font-weight:700;color:rgba(255,255,255,0.5);pointer-events:none;text-shadow:0 1px 4px #000;white-space:nowrap`;
     el.textContent = r.name;
     canvas.appendChild(el);
   });
@@ -863,36 +914,95 @@ function buildMap() {
   placeNpcs();
 }
 
+function getRegionAt(col, row) {
+  for(const r of REGIONS) {
+    if(col >= r.col && col < r.col + r.w && row >= r.row && row < r.row + r.h) {
+      return r;
+    }
+  }
+  return null;
+}
+
+function drawDecorations(canvas) {
+  // Trees
+  const treePositions = [
+    {col:5,row:8},{col:8,row:5},{col:12,row:3},{col:3,row:12},{col:7,row:10},
+    {col:2,row:15},{col:15,row:2},{col:10,row:7},{col:6,row:14},{col:14,row:6},
+    {col:1,row:20},{col:20,row:1},{col:8,row:18},{col:18,row:8},{col:4,row:22},
+    {col:22,row:4},{col:11,row:15},{col:15,row:11},{col:3,row:25},{col:25,row:3},
+    {col:13,row:13},{col:7,row:20},{col:20,row:7},{col:9,row:22},{col:22,row:9},
+    {col:16,row:16},{col:2,row:28},{col:28,row:2},{col:12,row:20},{col:20,row:12},
+  ];
+  treePositions.forEach(p => {
+    const pos = gridToScreen(p.col, p.row);
+    const tree = document.createElement('div');
+    tree.className = 'tree-3d';
+    tree.style.left = (pos.x - 16) + 'px';
+    tree.style.top = (pos.y - 24) + 'px';
+    tree.textContent = ['🌲','🌳','🌴','🎄','🌵'][Math.floor(Math.random()*5)];
+    canvas.appendChild(tree);
+  });
+
+  // Buildings
+  const buildings = [
+    {col:25,row:20,icon:'🏰'},{col:22,row:18,icon:'🏯'},{col:28,row:22,icon:'⛪'},
+    {col:10,row:15,icon:'🏠'},{col:15,row:10,icon:'🏡'},{col:35,row:15,icon:'🏔️'},
+    {col:40,row:30,icon:'🏰'},{col:5,row:35,icon:'🌋'},{col:30,row:40,icon:'🏰'},
+  ];
+  buildings.forEach(b => {
+    const pos = gridToScreen(b.col, b.row);
+    const el = document.createElement('div');
+    el.className = 'building';
+    el.style.left = (pos.x - 18) + 'px';
+    el.style.top = (pos.y - 30) + 'px';
+    el.textContent = b.icon;
+    canvas.appendChild(el);
+  });
+
+  // Rocks
+  for(let i=0;i<20;i++) {
+    const col = 2 + Math.floor(Math.random() * 46);
+    const row = 2 + Math.floor(Math.random() * 46);
+    const pos = gridToScreen(col, row);
+    const rock = document.createElement('div');
+    rock.className = 'map-object';
+    rock.style.left = (pos.x - 12) + 'px';
+    rock.style.top = (pos.y - 10) + 'px';
+    rock.style.fontSize = '18px';
+    rock.textContent = ['🪨','💎','⭐','🌸','🍄'][Math.floor(Math.random()*5)];
+    canvas.appendChild(rock);
+  }
+}
+
 function placeNpcs() {
   const npcCount = 15;
   const positions = [];
 
   for(let i = 0; i < npcCount; i++) {
-    let x, y, valid;
+    let col, row, valid;
     let attempts = 0;
     do {
-      x = 100 + Math.random() * 2200;
-      y = 100 + Math.random() * 1600;
+      col = 5 + Math.floor(Math.random() * 40);
+      row = 5 + Math.floor(Math.random() * 40);
       valid = true;
-      // Check not too close to other NPCs
       for(const p of positions) {
-        if(Math.abs(x - p.x) < 120 && Math.abs(y - p.y) < 120) {
+        if(Math.abs(col - p.col) < 4 && Math.abs(row - p.row) < 4) {
           valid = false;
           break;
         }
       }
-      // Not too close to player start
-      if(Math.abs(x - 900) < 150 && Math.abs(y - 700) < 150) valid = false;
+      // Not too close to player start (25, 20)
+      if(Math.abs(col - 25) < 5 && Math.abs(row - 20) < 5) valid = false;
       attempts++;
     } while(!valid && attempts < 50);
 
-    positions.push({x, y});
+    positions.push({col, row});
 
     const typeIdx = i % NPC_TYPES.length;
     const npcType = NPC_TYPES[typeIdx];
     const npc = {
       id: i,
-      x, y,
+      col, row,
       type: npcType,
       name: NPC_NAMES[npcType] || '神秘人',
       level: Math.ceil((i+1) / 3),
@@ -900,10 +1010,11 @@ function placeNpcs() {
     };
     state.npcs.push(npc);
 
+    const pos = gridToScreen(col, row);
     const el = document.createElement('div');
     el.className = 'npc';
     el.id = `npc_${i}`;
-    el.style.cssText = `left:${x - 24}px;top:${y - 24}px;background:${getNpcBg(npc.level)}`;
+    el.style.cssText = `left:${pos.x - 24}px;top:${pos.y - 32}px;background:${getNpcBg(npc.level)}`;
     el.innerHTML = `${npc.type}<span class="npc-name">${npc.name} Lv.${npc.level}</span>`;
     el.onclick = (e) => { e.stopPropagation(); interactNpc(i); };
     document.getElementById('mapCanvas').appendChild(el);
@@ -921,17 +1032,22 @@ function getNpcBg(level) {
 // PLAYER MOVEMENT
 // ============================================================
 
-function movePlayer(targetX, targetY) {
+function movePlayer(targetCol, targetRow) {
   // Clamp to map bounds
-  targetX = Math.max(22, Math.min(2378, targetX));
-  targetY = Math.max(22, Math.min(1778, targetY));
+  targetCol = Math.max(1, Math.min(MAP_COLS - 2, targetCol));
+  targetRow = Math.max(1, Math.min(MAP_ROWS - 2, targetRow));
 
-  state.playerX = targetX;
-  state.playerY = targetY;
+  state.playerCol = targetCol;
+  state.playerRow = targetRow;
 
+  const pos = gridToScreen(targetCol, targetRow);
   const player = document.getElementById('player');
-  player.style.left = (targetX - 22) + 'px';
-  player.style.top = (targetY - 22) + 'px';
+  player.style.left = (pos.x - 24) + 'px';
+  player.style.top = (pos.y - 32) + 'px';
+
+  // Add walking animation
+  player.classList.add('walking');
+  setTimeout(() => player.classList.remove('walking'), 400);
 
   // Camera follow
   updateCamera();
@@ -947,8 +1063,44 @@ function updateCamera() {
   const vw = worldMap.clientWidth;
   const vh = worldMap.clientHeight;
 
-  let camX = state.playerX - vw / 2;
-  let camY = state.playerY - vh / 2;
+  // Player screen position (centered on map)
+  const playerPos = gridToScreen(state.playerCol, state.playerRow);
+
+  // Camera offset to center player
+  let camX = playerPos.x - vw / 2;
+  let camY = playerPos.y - vh / 2;
+
+  // Clamp camera
+  camX = Math.max(-400, Math.min(2800, camX));
+  camY = Math.max(-200, Math.min(2000, camY));
+
+  canvas.style.transform = `translate(${-camX}px, ${-camY}px)`;
+}
+
+function updateMinimap() {
+  const mmView = document.getElementById('minimapView');
+  const mmPlayer = document.getElementById('minimapPlayer');
+  const worldMap = document.getElementById('worldMap');
+  const vw = worldMap.clientWidth;
+  const vh = worldMap.clientHeight;
+
+  const mmW = 150, mmH = 112;
+  const scaleX = mmW / MAP_COLS;
+  const scaleY = mmH / MAP_ROWS;
+
+  mmView.style.cssText = `left:${state.playerCol * scaleX - 10}px;top:${state.playerRow * scaleY - 10}px;width:${20}px;height:${20}px`;
+  mmPlayer.style.cssText = `left:${state.playerCol * scaleX - 3}px;top:${state.playerRow * scaleY - 3}px`;
+}
+}
+
+function updateCamera() {
+  const worldMap = document.getElementById('worldMap');
+  const canvas = document.getElementById('mapCanvas');
+  const vw = worldMap.clientWidth;
+  const vh = worldMap.clientHeight;
+
+  let camX = state.playerCol - vw / 2;
+  let camY = state.playerRow - vh / 2;
 
   // Clamp camera
   camX = Math.max(0, Math.min(2400 - vw, camX));
@@ -969,11 +1121,9 @@ function updateMinimap() {
   const scaleX = mmW / 2400;
   const scaleY = mmH / 1800;
 
-  const camX = state.playerX - vw / 2;
-  const camY = state.playerY - vh / 2;
+  const camX = state.playerCol - vw / 2;
+  const camY = state.playerRow - vh / 2;
 
-  mmView.style.cssText = `left:${camX * scaleX}px;top:${camY * scaleY}px;width:${vw * scaleX}px;height:${vh * scaleY}px`;
-  mmPlayer.style.cssText = `left:${state.playerX * scaleX - 3}px;top:${state.playerY * scaleY - 3}px`;
 }
 
 // Click to move
@@ -986,8 +1136,8 @@ document.getElementById('worldMap').addEventListener('click', (e) => {
   const worldMap = document.getElementById('worldMap');
   const vw = worldMap.clientWidth;
   const vh = worldMap.clientHeight;
-  const camX = state.playerX - vw / 2;
-  const camY = state.playerY - vh / 2;
+  const camX = state.playerCol - vw / 2;
+  const camY = state.playerRow - vh / 2;
 
   const worldX = clickX + camX;
   const worldY = clickY + camY;
@@ -1014,7 +1164,7 @@ function showClickIndicator(x, y) {
 function checkNpcProximity() {
   for(const npc of state.npcs) {
     if(npc.answered) continue;
-    const dist = Math.sqrt((state.playerX - npc.x) ** 2 + (state.playerY - npc.y) ** 2);
+    const dist = Math.abs(state.playerCol - npc.col) + Math.abs(state.playerRow - npc.row);
     if(dist < 60) {
       interactNpc(npc.id);
       break;
@@ -1169,8 +1319,8 @@ function resetGame() {
   state.xp = 0;
   state.score = 0;
   state.answered = 0;
-  state.playerX = 900;
-  state.playerY = 700;
+  state.playerCol = 20;
+  state.playerRow = 15;
   state.equipped = {hat:'hat_0', body:'body_0', pants:'pants_0', shoes:'shoes_0', weapon:'weapon_0', cape:'cape_0'};
   state.owned = ['hat_0','body_0','pants_0','shoes_0','weapon_0','cape_0'];
   state.answeredNpcs.clear();
@@ -1187,7 +1337,7 @@ function resetGame() {
   // Regenerate
   allQuestions = generateQuestions();
   buildMap();
-  movePlayer(state.playerX, state.playerY);
+  movePlayer(state.playerCol, state.playerRow);
   updateCharacterDisplay();
   updateHud();
 
@@ -1332,15 +1482,15 @@ function showFloatText(text, type) {
   const el = document.createElement('div');
   el.className = `float-text float-${type}`;
   el.textContent = text;
-  el.style.cssText = `left:${state.playerX}px;top:${state.playerY - 40}px`;
-  // Adjust for camera
+  // Use grid coordinates for positioning
+  const pos = gridToScreen(state.playerCol, state.playerRow);
   const worldMap = document.getElementById('worldMap');
   const vw = worldMap.clientWidth;
   const vh = worldMap.clientHeight;
-  const camX = state.playerX - vw / 2;
-  const camY = state.playerY - vh / 2;
-  el.style.left = (state.playerX - camX - 30) + 'px';
-  el.style.top = (state.playerY - camY - 40) + 'px';
+  const camX = pos.x - vw / 2;
+  const camY = pos.y - vh / 2;
+  el.style.left = (pos.x - camX - 30) + 'px';
+  el.style.top = (pos.y - camY - 40) + 'px';
   document.getElementById('worldMap').appendChild(el);
   setTimeout(() => el.remove(), 1500);
 }
@@ -1362,7 +1512,7 @@ function startGame() {
   buildMap();
 
   // Place player
-  movePlayer(state.playerX, state.playerY);
+  movePlayer(state.playerCol, state.playerRow);
 
   // Update character
   updateCharacterDisplay();
@@ -1384,8 +1534,8 @@ function saveGame() {
     xp: state.xp,
     score: state.score,
     answered: state.answered,
-    playerX: state.playerX,
-    playerY: state.playerY,
+    playerCol: state.playerCol,
+    playerRow: state.playerRow,
     equipped: state.equipped,
     owned: state.owned,
     answeredNpcs: Array.from(state.answeredNpcs),
@@ -1401,8 +1551,8 @@ function loadGame() {
       state.xp = save.xp || 0;
       state.score = save.score || 0;
       state.answered = save.answered || 0;
-      state.playerX = save.playerX || 900;
-      state.playerY = save.playerY || 700;
+      state.playerCol = save.playerCol || 20;
+      state.playerRow = save.playerRow || 15;
       state.equipped = save.equipped || state.equipped;
       state.owned = save.owned || state.owned;
       state.answeredNpcs = new Set(save.answeredNpcs || []);
