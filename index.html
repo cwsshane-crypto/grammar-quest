@@ -1027,134 +1027,71 @@ function getNpcBg(level) {
   const bgs = ['#2c3e50','#8e44ad','#2980b9','#27ae60','#d35400','#c0392b'];
   return bgs[Math.min(level-1, bgs.length-1)];
 }
-
 // ============================================================
 // PLAYER MOVEMENT
 // ============================================================
 
 function movePlayer(targetCol, targetRow) {
-  // Clamp to map bounds
   targetCol = Math.max(1, Math.min(MAP_COLS - 2, targetCol));
   targetRow = Math.max(1, Math.min(MAP_ROWS - 2, targetRow));
-
   state.playerCol = targetCol;
   state.playerRow = targetRow;
-
   const pos = gridToScreen(targetCol, targetRow);
   const player = document.getElementById('player');
   player.style.left = (pos.x - 24) + 'px';
   player.style.top = (pos.y - 32) + 'px';
-
-  // Add walking animation
   player.classList.add('walking');
   setTimeout(() => player.classList.remove('walking'), 400);
-
-  // Camera follow
   updateCamera();
   updateMinimap();
-
-  // Check NPC proximity
   checkNpcProximity();
 }
 
 function updateCamera() {
   const worldMap = document.getElementById('worldMap');
-  const canvas = document.getElementById('mapCanvas');
   const vw = worldMap.clientWidth;
   const vh = worldMap.clientHeight;
-
-  // Player screen position (centered on map)
   const playerPos = gridToScreen(state.playerCol, state.playerRow);
-
-  // Camera offset to center player
   let camX = playerPos.x - vw / 2;
   let camY = playerPos.y - vh / 2;
-
-  // Clamp camera
   camX = Math.max(-400, Math.min(2800, camX));
   camY = Math.max(-200, Math.min(2000, camY));
-
-  canvas.style.transform = `translate(${-camX}px, ${-camY}px)`;
+  document.getElementById('mapCanvas').style.transform = 'translate(' + (-camX) + 'px, ' + (-camY) + 'px)';
 }
 
 function updateMinimap() {
-  const mmView = document.getElementById('minimapView');
-  const mmPlayer = document.getElementById('minimapPlayer');
-  const worldMap = document.getElementById('worldMap');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-
   const mmW = 150, mmH = 112;
   const scaleX = mmW / MAP_COLS;
   const scaleY = mmH / MAP_ROWS;
-
-  mmView.style.cssText = `left:${state.playerCol * scaleX - 10}px;top:${state.playerRow * scaleY - 10}px;width:${20}px;height:${20}px`;
-  mmPlayer.style.cssText = `left:${state.playerCol * scaleX - 3}px;top:${state.playerRow * scaleY - 3}px`;
-}
-}
-
-function updateCamera() {
-  const worldMap = document.getElementById('worldMap');
-  const canvas = document.getElementById('mapCanvas');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-
-  let camX = state.playerCol - vw / 2;
-  let camY = state.playerRow - vh / 2;
-
-  // Clamp camera
-  camX = Math.max(0, Math.min(2400 - vw, camX));
-  camY = Math.max(0, Math.min(1800 - vh, camY));
-
-  canvas.style.transform = `translate(${-camX}px, ${-camY}px)`;
-}
-
-function updateMinimap() {
-  const mmView = document.getElementById('minimapView');
-  const mmPlayer = document.getElementById('minimapPlayer');
-  const worldMap = document.getElementById('worldMap');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-
-  // Viewport rect on minimap
-  const mmW = 150, mmH = 112;
-  const scaleX = mmW / 2400;
-  const scaleY = mmH / 1800;
-
-  const camX = state.playerCol - vw / 2;
-  const camY = state.playerRow - vh / 2;
-
+  document.getElementById('minimapView').style.cssText = 'left:' + (state.playerCol * scaleX - 10) + 'px;top:' + (state.playerRow * scaleY - 10) + 'px;width:20px;height:20px';
+  document.getElementById('minimapPlayer').style.cssText = 'left:' + (state.playerCol * scaleX - 3) + 'px;top:' + (state.playerRow * scaleY - 3) + 'px';
 }
 
 // Click to move
-document.getElementById('worldMap').addEventListener('click', (e) => {
-  const rect = document.getElementById('worldMap').getBoundingClientRect();
-  const clickX = e.clientX - rect.left;
-  const clickY = e.clientY - rect.top;
-
-  // Convert to world coordinates
-  const worldMap = document.getElementById('worldMap');
-  const vw = worldMap.clientWidth;
-  const vh = worldMap.clientHeight;
-  const camX = state.playerCol - vw / 2;
-  const camY = state.playerRow - vh / 2;
-
-  const worldX = clickX + camX;
-  const worldY = clickY + camY;
-
-  // Show click indicator
+document.getElementById('worldMap').addEventListener('click', function(e) {
+  var rect = document.getElementById('worldMap').getBoundingClientRect();
+  var clickX = e.clientX - rect.left;
+  var clickY = e.clientY - rect.top;
+  var worldMapEl = document.getElementById('worldMap');
+  var vw = worldMapEl.clientWidth;
+  var vh = worldMapEl.clientHeight;
+  var playerPos = gridToScreen(state.playerCol, state.playerRow);
+  var camX = playerPos.x - vw / 2;
+  var camY = playerPos.y - vh / 2;
+  var worldX = clickX + camX;
+  var worldY = clickY + camY;
   showClickIndicator(clickX, clickY);
-
-  movePlayer(worldX, worldY);
+  var grid = screenToGrid(worldX, worldY);
+  movePlayer(grid.col, grid.row);
 });
 
 function showClickIndicator(x, y) {
-  const indicator = document.createElement('div');
+  var indicator = document.createElement('div');
   indicator.id = 'clickIndicator';
   indicator.style.left = x + 'px';
   indicator.style.top = y + 'px';
   document.getElementById('worldMap').appendChild(indicator);
-  setTimeout(() => indicator.remove(), 600);
+  setTimeout(function() { indicator.remove(); }, 600);
 }
 
 // ============================================================
@@ -1162,10 +1099,11 @@ function showClickIndicator(x, y) {
 // ============================================================
 
 function checkNpcProximity() {
-  for(const npc of state.npcs) {
+  for(var i = 0; i < state.npcs.length; i++) {
+    var npc = state.npcs[i];
     if(npc.answered) continue;
-    const dist = Math.abs(state.playerCol - npc.col) + Math.abs(state.playerRow - npc.row);
-    if(dist < 60) {
+    var dist = Math.abs(state.playerCol - npc.col) + Math.abs(state.playerRow - npc.row);
+    if(dist < 3) {
       interactNpc(npc.id);
       break;
     }
@@ -1173,16 +1111,12 @@ function checkNpcProximity() {
 }
 
 function interactNpc(npcId) {
-  const npc = state.npcs[npcId];
+  var npc = state.npcs[npcId];
   if(!npc || npc.answered) return;
-
   state.currentNpc = npc;
-
-  // Pick a question based on NPC level
-  const levelQuestions = allQuestions.filter(q => q.level <= npc.level + 2);
-  const pool = levelQuestions.length > 0 ? levelQuestions : allQuestions;
+  var levelQuestions = allQuestions.filter(function(q) { return q.level <= npc.level + 2; });
+  var pool = levelQuestions.length > 0 ? levelQuestions : allQuestions;
   state.currentQuestion = pool[Math.floor(Math.random() * pool.length)];
-
   showQuestion();
 }
 
@@ -1191,78 +1125,64 @@ function interactNpc(npcId) {
 // ============================================================
 
 function showQuestion() {
-  const q = state.currentQuestion;
-  const npc = state.currentNpc;
+  var q = state.currentQuestion;
+  var npc = state.currentNpc;
   if(!q || !npc) return;
-
-  state.answered = false; // reset answer lock for new question
-
+  state.answered = false;
   document.getElementById('qNpcIcon').textContent = npc.type;
-  document.getElementById('qNpcName').textContent = `${npc.name} Lv.${npc.level}`;
+  document.getElementById('qNpcName').textContent = npc.name + ' Lv.' + npc.level;
   document.getElementById('qText').innerHTML = q.question.replace('___', '<span class="blank">___</span>');
-
-  const optsEl = document.getElementById('qOptions');
+  var optsEl = document.getElementById('qOptions');
   optsEl.innerHTML = '';
-  q.options.forEach((opt, i) => {
-    const btn = document.createElement('button');
+  q.options.forEach(function(opt, i) {
+    var btn = document.createElement('button');
     btn.className = 'q-option';
-    btn.textContent = `${String.fromCharCode(65+i)}. ${opt}`;
-    btn.onclick = () => checkAnswer(i);
+    btn.textContent = String.fromCharCode(65+i) + '. ' + opt;
+    btn.onclick = (function(idx) { return function() { checkAnswer(idx); }; })(i);
     optsEl.appendChild(btn);
   });
-
   document.getElementById('qFeedback').className = 'q-feedback';
   document.getElementById('qCoinsEarned').textContent = '';
   document.getElementById('questionOverlay').classList.add('show');
 }
 
 function checkAnswer(idx) {
-  const q = state.currentQuestion;
-  const npc = state.currentNpc;
+  var q = state.currentQuestion;
+  var npc = state.currentNpc;
   if(!q || !npc) return;
-  if(state.answered) return; // prevent double-answering
-
-  state.answered = true; // lock immediately
-
-  const isCorrect = idx === q.answer;
-  const opts = document.querySelectorAll('.q-option');
-  opts.forEach((b, i) => {
+  if(state.answered) return;
+  state.answered = true;
+  var isCorrect = idx === q.answer;
+  var opts = document.querySelectorAll('.q-option');
+  opts.forEach(function(b, i) {
     b.classList.add('disabled');
-    b.onclick = null; // remove click handler
+    b.onclick = null;
     if(i === q.answer) b.classList.add('correct');
     else if(i === idx && !isCorrect) b.classList.add('wrong');
   });
-
-  const feedback = document.getElementById('qFeedback');
-  const feedbackTitle = document.getElementById('qFeedbackTitle');
-  const feedbackExp = document.getElementById('qFeedbackExp');
-  const coinsEarned = document.getElementById('qCoinsEarned');
-
+  var feedback = document.getElementById('qFeedback');
+  var feedbackTitle = document.getElementById('qFeedbackTitle');
+  var feedbackExp = document.getElementById('qFeedbackExp');
+  var coinsEarned = document.getElementById('qCoinsEarned');
   if(isCorrect) {
-    const coins = 5 + npc.level * 2;
-    const xp = 10 + npc.level * 5;
+    var coins = 5 + npc.level * 2;
+    var xp = 10 + npc.level * 5;
     state.coins += coins;
     state.xp += xp;
     state.score++;
     state.answered++;
     npc.answered = true;
     state.answeredNpcs.add(npc.id);
-
     feedback.className = 'q-feedback show correct';
     feedbackTitle.textContent = '✅ 答對了！';
     feedbackExp.textContent = q.explanation;
-    coinsEarned.textContent = `+${coins} 🪙  +${xp} ⚡ XP`;
-
-    // Mark NPC as answered
-    const npcEl = document.getElementById(`npc_${npc.id}`);
+    coinsEarned.textContent = '+' + coins + ' 🪙  +' + xp + ' ⚡ XP';
+    var npcEl = document.getElementById('npc_' + npc.id);
     if(npcEl) npcEl.classList.add('answered');
-
-    showFloatText(`+${coins} 🪙`, 'gold');
+    showFloatText('+' + coins + ' 🪙', 'gold');
     updateHud();
-
-    // Check if all NPCs answered → auto reset
     if(state.answeredNpcs.size >= state.npcs.length) {
-      setTimeout(() => {
+      setTimeout(function() {
         showFloatText('🎉 全部完成！新一輪開始！', 'gold');
         resetAllNpcs();
       }, 1500);
@@ -1272,38 +1192,25 @@ function checkAnswer(idx) {
     feedbackTitle.textContent = '❌ 答錯了';
     feedbackExp.textContent = q.explanation;
     coinsEarned.textContent = '';
-
     showFloatText('再試過！', 'red');
   }
-
-  // Auto close after delay
-  setTimeout(() => {
+  setTimeout(function() {
     document.getElementById('questionOverlay').classList.remove('show');
     state.currentNpc = null;
     state.currentQuestion = null;
   }, 2500);
 }
 
-// Reset all NPCs for a new round
 function resetAllNpcs() {
   state.answeredNpcs.clear();
   state.answered = 0;
   state.npcs = [];
-
-  // Remove old NPC elements
-  document.querySelectorAll('.npc').forEach(el => el.remove());
-
-  // Regenerate questions pool
+  document.querySelectorAll('.npc').forEach(function(el) { el.remove(); });
   allQuestions = generateQuestions();
-
-  // Re-place NPCs
   placeNpcs();
-
-  // Update HUD
   updateHud();
 }
 
-// Confirm & reset entire game
 function confirmReset() {
   if(confirm('確定要重置角色嗎？\n\n金幣、裝備、進度都會清除！')) {
     resetGame();
@@ -1311,38 +1218,31 @@ function confirmReset() {
 }
 
 function resetGame() {
-  // Clear save
   localStorage.removeItem('grammarQuestSave');
-
-  // Reset state
   state.coins = 0;
   state.xp = 0;
   state.score = 0;
   state.answered = 0;
   state.playerCol = 20;
   state.playerRow = 15;
-  state.equipped = {hat:'hat_0', body:'body_0', pants:'pants_0', shoes:'shoes_0', weapon:'weapon_0', cape:'cape_0'};
+  state.equipped = {hat:'hat_0',body:'body_0',pants:'pants_0',shoes:'shoes_0',weapon:'weapon_0',cape:'cape_0'};
   state.owned = ['hat_0','body_0','pants_0','shoes_0','weapon_0','cape_0'];
   state.answeredNpcs.clear();
   state.npcs = [];
   state.currentNpc = null;
   state.currentQuestion = null;
-
-  // Remove old NPCs
-  document.querySelectorAll('.npc').forEach(el => el.remove());
-
-  // Hide question overlay
+  document.querySelectorAll('.npc').forEach(function(el) { el.remove(); });
   document.getElementById('questionOverlay').classList.remove('show');
-
-  // Regenerate
   allQuestions = generateQuestions();
   buildMap();
   movePlayer(state.playerCol, state.playerRow);
   updateCharacterDisplay();
   updateHud();
-
   showFloatText('🔄 角色已重置！', 'gold');
 }
+
+// ============================================================
+// SHOP
 // ============================================================
 
 function openShop() {
